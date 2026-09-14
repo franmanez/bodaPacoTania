@@ -13,13 +13,14 @@ const finalScreen = document.getElementById("finalScreen");
 
 let currentChallengeIndex = 0;
 
-// Definición de los 10 desafíos con respuestas dummy para pruebas
+// Definición de los 10 desafíos
 const challenges = [
     {
         type: "text",
-        question: "Película de 1994 donde un banquero planea su fuga durante décadas",
-        validAnswers: ["test1", "shawshank", "cadena perpetua", "the shawshank redemption"],
-        hint: "Pista: Escribe 'test1' para probar"
+        target: "paco",
+        question: "¿Cómo se llama el colegio donde estudió Tania?",
+        validAnswers: ["academia san gervasio", "san gervasio"],
+        hint: "Pista: Un lugar muy especial en la vida de Tania"
     },
     {
         type: "drag",
@@ -34,31 +35,35 @@ const challenges = [
     },
     {
         type: "text",
-        question: "¿Cuál es la comida que Tania más odia?",
-        validAnswers: ["test2", "cebolla", "cebollas"],
-        hint: "Pista: Escribe 'test2' para probar"
+        target: "tania",
+        question: "¿Cuál es la comida que más odia Tania?",
+        validAnswers: ["cebolla", "cebollas"],
+        hint: "Pista: Algo que hace llorar... pero no de emoción"
     },
     {
         type: "memory",
-        question: "Encuentra las 6 parejas de películas",
-        pairs: ["Titanic", "Avatar", "Shrek", "Frozen", "Coco", "Up"]
+        question: "Encuentra las 8 parejas de familiares",
+        pairs: ["Familiar 1", "Familiar 2", "Familiar 3", "Familiar 4", "Familiar 5", "Familiar 6", "Familiar 7", "Familiar 8"],
+        timeLimit: 35
     },
     {
         type: "text",
         question: "¿Qué significan las siglas FBA en Amazon?",
-        validAnswers: ["test3", "fulfillment by amazon", "fulfilled by amazon"],
-        hint: "Pista: Escribe 'test3' para probar"
-    },
-    {
-        type: "sequence",
-        question: "Repite la secuencia de colores correctamente 3 veces",
-        rounds: 3
+        validAnswers: ["fulfillment by amazon", "fulfilled by amazon"],
+        hint: "Pista: El corazón de vuestro negocio juntos"
     },
     {
         type: "text",
-        question: "¿Qué manía tiene Paco que le vuelve loco a Tania?",
-        validAnswers: ["test4", "dejar la ropa tirada", "ropa tirada", "dejar ropa tirada"],
-        hint: "Pista: Escribe 'test4' para probar"
+        target: "tania",
+        question: "¿Qué manía tiene Paco que te vuelve loca?",
+        validAnswers: ["dejar la ropa tirada", "ropa tirada", "dejar ropa tirada"],
+        hint: "Pista: Algo que siempre acaba en el suelo..."
+    },
+    {
+        type: "flash-sequence",
+        question: "Memoriza y reproduce la secuencia",
+        rounds: 5,
+        timeLimit: 40
     },
     {
         type: "reaction",
@@ -78,13 +83,13 @@ const challenges = [
     {
         type: "text",
         question: "¿En qué año empezasteis a trabajar con Amazon?",
-        validAnswers: ["test5", "2020", "2021", "2022"],
-        hint: "Pista: Escribe 'test5' para probar"
+        validAnswers: ["2020", "2021", "2022"],
+        hint: "Pista: Un año reciente que cambió vuestras vidas"
     },
     {
         type: "cipher",
         question: "Descifra este mensaje: 16-5-12-9-3-21-12-1",
-        hint: "Pista: Escribe 'PELICULA' o 'TEST6'",
+        hint: "Pista: Cada número es una letra del alfabeto (A=1, B=2...)",
         answer: "PELICULA"
     }
 ];
@@ -144,8 +149,8 @@ function loadChallenge(index) {
         renderDragChallenge(challenge, content);
     } else if (challenge.type === "memory") {
         renderMemoryChallenge(challenge, content);
-    } else if (challenge.type === "sequence") {
-        renderSequenceChallenge(challenge, content);
+    } else if (challenge.type === "flash-sequence") {
+        renderFlashSequenceChallenge(challenge, content);
     } else if (challenge.type === "reaction") {
         renderReactionChallenge(challenge, content);
     } else if (challenge.type === "cipher") {
@@ -155,10 +160,15 @@ function loadChallenge(index) {
 
 // Desafío de texto
 function renderTextChallenge(challenge, content) {
+    const targetLabel = challenge.target 
+        ? `<div class="challenge-target">Pregunta para ${challenge.target === "paco" ? "Paco" : "Tania"}</div>` 
+        : "";
+
     content.innerHTML = `
+        ${targetLabel}
         <div class="challenge-question">${challenge.question}</div>
         <div class="challenge-hint">${challenge.hint}</div>
-        <input type="text" class="challenge-input" id="textInput" placeholder="Escribe cualquier cosa...">
+        <input type="text" class="challenge-input" id="textInput" placeholder="Escribe tu respuesta...">
         <button class="start-button" id="submitAnswer">
             <span>CONTINUAR</span>
             <span class="arrow">→</span>
@@ -232,142 +242,196 @@ function renderDragChallenge(challenge, content) {
 
 // Desafío de memoria
 function renderMemoryChallenge(challenge, content) {
-    const pairs = [...challenge.pairs, ...challenge.pairs];
-    const shuffled = pairs.sort(() => Math.random() - 0.5);
-    
-    content.innerHTML = `
-        <div class="challenge-question">${challenge.question}</div>
-        <div class="memory-grid" id="memoryGrid"></div>
-        <button class="start-button" id="skipMemory" style="margin-top: 20px;">
-            <span>CONTINUAR</span>
-            <span class="arrow">→</span>
-        </button>
-    `;
-
-    const grid = document.getElementById("memoryGrid");
-    let flippedCards = [];
+    let timeLeft = challenge.timeLimit || 30;
     let matchedPairs = 0;
+    let flippedCards = [];
+    let timer;
+    
+    function initGame() {
+        const pairs = [...challenge.pairs, ...challenge.pairs];
+        const shuffled = pairs.sort(() => Math.random() - 0.5);
+        
+        content.innerHTML = `
+            <div class="challenge-question">${challenge.question}</div>
+            <div class="memory-timer">Tiempo: <span id="memoryTimeDisplay">${timeLeft}</span>s</div>
+            <div class="memory-grid" id="memoryGrid"></div>
+            <button class="start-button" id="skipMemory" style="margin-top: 20px;">
+                <span>CONTINUAR</span>
+                <span class="arrow">→</span>
+            </button>
+        `;
 
-    shuffled.forEach((pair, index) => {
-        const card = document.createElement("div");
-        card.className = "memory-card";
-        card.dataset.value = pair;
-        card.innerHTML = `<div class="card-inner"><div class="card-front">?</div><div class="card-back">${pair}</div></div>`;
-        grid.appendChild(card);
+        const grid = document.getElementById("memoryGrid");
+        flippedCards = [];
+        matchedPairs = 0;
 
-        card.addEventListener("click", () => {
-            if (card.classList.contains("flipped") || flippedCards.length === 2) return;
+        shuffled.forEach((pair, index) => {
+            const card = document.createElement("div");
+            card.className = "memory-card";
+            card.dataset.value = pair;
+            card.innerHTML = `<div class="card-inner"><div class="card-front">?</div><div class="card-back">${pair}</div></div>`;
+            grid.appendChild(card);
 
-            card.classList.add("flipped");
-            flippedCards.push(card);
+            card.addEventListener("click", () => {
+                if (card.classList.contains("flipped") || flippedCards.length === 2) return;
 
-            if (flippedCards.length === 2) {
-                const [card1, card2] = flippedCards;
-                if (card1.dataset.value === card2.dataset.value) {
-                    card1.classList.add("matched");
-                    card2.classList.add("matched");
-                    matchedPairs++;
-                    flippedCards = [];
-                } else {
-                    setTimeout(() => {
-                        card1.classList.remove("flipped");
-                        card2.classList.remove("flipped");
+                card.classList.add("flipped");
+                flippedCards.push(card);
+
+                if (flippedCards.length === 2) {
+                    const [card1, card2] = flippedCards;
+                    if (card1.dataset.value === card2.dataset.value) {
+                        card1.classList.add("matched");
+                        card2.classList.add("matched");
+                        matchedPairs++;
                         flippedCards = [];
-                    }, 1000);
+                        
+                        if (matchedPairs === challenge.pairs.length) {
+                            clearInterval(timer);
+                            setTimeout(() => nextChallenge(), 1000);
+                        }
+                    } else {
+                        setTimeout(() => {
+                            card1.classList.remove("flipped");
+                            card2.classList.remove("flipped");
+                            flippedCards = [];
+                        }, 1000);
+                    }
                 }
-            }
+            });
         });
-    });
 
-    document.getElementById("skipMemory").addEventListener("click", () => {
-        nextChallenge();
-    });
+        document.getElementById("skipMemory").addEventListener("click", () => {
+            clearInterval(timer);
+            nextChallenge();
+        });
+
+        timer = setInterval(() => {
+            timeLeft--;
+            const display = document.getElementById("memoryTimeDisplay");
+            if (display) {
+                display.textContent = timeLeft;
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                timeLeft = challenge.timeLimit || 30;
+                initGame();
+            }
+        }, 1000);
+    }
+
+    initGame();
 }
 
-// Desafío de secuencia (Simon Says)
-function renderSequenceChallenge(challenge, content) {
-    const colors = ["red", "blue", "green", "yellow"];
+// Desafío de secuencia relámpago
+function renderFlashSequenceChallenge(challenge, content) {
+    let timeLeft = challenge.timeLimit;
+    let currentRound = 1;
     let sequence = [];
     let playerSequence = [];
-    let currentRound = 1;
-    let isPlaying = false;
-
-    content.innerHTML = `
-        <div class="challenge-question">${challenge.question}</div>
-        <div class="sequence-display">Ronda: <span id="roundDisplay">1</span> / ${challenge.rounds}</div>
-        <div class="sequence-grid" id="sequenceGrid">
-            <div class="sequence-btn red" data-color="red"></div>
-            <div class="sequence-btn blue" data-color="blue"></div>
-            <div class="sequence-btn green" data-color="green"></div>
-            <div class="sequence-btn yellow" data-color="yellow"></div>
-        </div>
-        <div class="sequence-status" id="sequenceStatus">Observa la secuencia...</div>
-        <button class="start-button" id="skipSequence" style="margin-top: 20px;">
-            <span>CONTINUAR</span>
-            <span class="arrow">→</span>
-        </button>
-    `;
-
-    function playSequence() {
-        isPlaying = true;
-        document.getElementById("sequenceStatus").textContent = "Observa...";
+    let isShowingSequence = false;
+    let timer;
+    const colors = ["red", "blue", "green", "yellow"];
+    
+    function initGame() {
+        content.innerHTML = `
+            <div class="challenge-question">${challenge.question}</div>
+            <div class="flash-info">
+                <div class="flash-timer">Tiempo: <span id="flashTimeDisplay">${timeLeft}</span>s</div>
+                <div class="flash-round">Ronda: <span id="flashRoundDisplay">1</span> / ${challenge.rounds}</div>
+            </div>
+            <div class="flash-grid" id="flashGrid">
+                <div class="flash-btn red" data-color="red"></div>
+                <div class="flash-btn blue" data-color="blue"></div>
+                <div class="flash-btn green" data-color="green"></div>
+                <div class="flash-btn yellow" data-color="yellow"></div>
+            </div>
+            <div class="flash-status" id="flashStatus">Observa la secuencia...</div>
+            <button class="start-button" id="skipFlash" style="margin-top: 20px;">
+                <span>CONTINUAR</span>
+                <span class="arrow">→</span>
+            </button>
+        `;
         
+        document.getElementById("skipFlash").addEventListener("click", () => {
+            clearInterval(timer);
+            nextChallenge();
+        });
+        
+        document.querySelectorAll(".flash-btn").forEach(btn => {
+            btn.addEventListener("click", () => handleFlashClick(btn));
+        });
+        
+        timer = setInterval(() => {
+            timeLeft--;
+            const display = document.getElementById("flashTimeDisplay");
+            if (display) display.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                setTimeout(() => nextChallenge(), 500);
+            }
+        }, 1000);
+        
+        setTimeout(() => showSequence(), 1000);
+    }
+    
+    function showSequence() {
+        isShowingSequence = true;
         sequence.push(colors[Math.floor(Math.random() * 4)]);
+        
+        document.getElementById("flashStatus").textContent = "Observa...";
         
         let i = 0;
         const interval = setInterval(() => {
             if (i >= sequence.length) {
                 clearInterval(interval);
-                isPlaying = false;
-                document.getElementById("sequenceStatus").textContent = "Tu turno...";
+                isShowingSequence = false;
+                playerSequence = [];
+                document.getElementById("flashStatus").textContent = "Tu turno...";
                 return;
             }
-
-            const btn = document.querySelector(`.sequence-btn.${sequence[i]}`);
+            
+            const btn = document.querySelector(`.flash-btn.${sequence[i]}`);
             btn.classList.add("active");
-            setTimeout(() => btn.classList.remove("active"), 500);
+            setTimeout(() => btn.classList.remove("active"), 400);
             i++;
-        }, 800);
+        }, 600);
     }
-
-    document.querySelectorAll(".sequence-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            if (isPlaying) return;
-
-            const color = btn.dataset.color;
-            playerSequence.push(color);
-
-            btn.classList.add("active");
-            setTimeout(() => btn.classList.remove("active"), 300);
-
-            const currentIndex = playerSequence.length - 1;
-            if (playerSequence[currentIndex] !== sequence[currentIndex]) {
-                document.getElementById("sequenceStatus").textContent = "¡Error! Empieza de nuevo...";
+    
+    function handleFlashClick(btn) {
+        if (isShowingSequence) return;
+        
+        const color = btn.dataset.color;
+        playerSequence.push(color);
+        
+        btn.classList.add("active");
+        setTimeout(() => btn.classList.remove("active"), 200);
+        
+        const currentIndex = playerSequence.length - 1;
+        
+        if (playerSequence[currentIndex] !== sequence[currentIndex]) {
+            document.getElementById("flashStatus").textContent = "¡Error! Reiniciando ronda...";
+            setTimeout(() => {
                 playerSequence = [];
-                currentRound = 1;
-                sequence = [];
-                document.getElementById("roundDisplay").textContent = "1";
-                setTimeout(() => playSequence(), 2000);
-            } else if (playerSequence.length === sequence.length) {
-                if (currentRound === challenge.rounds) {
-                    document.getElementById("sequenceStatus").textContent = "¡Completado!";
-                    setTimeout(() => nextChallenge(), 1500);
-                } else {
-                    currentRound++;
-                    document.getElementById("roundDisplay").textContent = currentRound;
-                    playerSequence = [];
-                    document.getElementById("sequenceStatus").textContent = "¡Correcto! Siguiente ronda...";
-                    setTimeout(() => playSequence(), 1500);
-                }
+                showSequence();
+            }, 1500);
+        } else if (playerSequence.length === sequence.length) {
+            if (currentRound === challenge.rounds) {
+                clearInterval(timer);
+                document.getElementById("flashStatus").textContent = "¡Completado!";
+                setTimeout(() => nextChallenge(), 1000);
+            } else {
+                currentRound++;
+                document.getElementById("flashRoundDisplay").textContent = currentRound;
+                document.getElementById("flashStatus").textContent = "¡Correcto! Siguiente ronda...";
+                setTimeout(() => showSequence(), 1200);
             }
-        });
-    });
-
-    document.getElementById("skipSequence").addEventListener("click", () => {
-        nextChallenge();
-    });
-
-    setTimeout(() => playSequence(), 1000);
+        }
+    }
+    
+    initGame();
 }
 
 // Desafío de reacción
@@ -456,14 +520,6 @@ function nextChallenge() {
 
 // Auto-avance para el candado
 document.addEventListener("DOMContentLoaded", () => {
-    const lockDigits = document.querySelectorAll(".lock-digit");
-    lockDigits.forEach((digit, index) => {
-        digit.addEventListener("input", () => {
-            if (digit.value.length === 1 && index < lockDigits.length - 1) {
-                lockDigits[index + 1].focus();
-            }
-        });
-    });
 });
 
 // Animación de shake

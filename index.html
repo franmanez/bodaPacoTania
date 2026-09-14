@@ -134,32 +134,31 @@
                 Estos tres números indican la cantidad de dinero que os he dado para vuestra boda
             </p>
             <button id="openLockButton" class="start-button">
-                <span>ABRIR EL CANDADO</span>
+                <span>ABRIR EL LIBRO</span>
                 <span class="arrow">→</span>
             </button>
         </div>
     </section>
 
-    <!-- Pantalla del candado -->
+    <!-- Pantalla de instrucciones del candado físico -->
     <section id="lockScreen" class="lock-screen hidden">
         <div class="lock-content">
             <div class="mission-number">
-                CANDADO DE LA MALETA
+                ÚLTIMO PASO
             </div>
             <h2>
-                Introducid<br>
-                la combinación
+                Introducid la combinación<br>
+                en el libro
             </h2>
-            <div class="lock-inputs">
-                <input type="number" class="lock-digit" id="digit1" min="0" max="9" maxlength="1">
-                <input type="number" class="lock-digit" id="digit2" min="0" max="9" maxlength="1">
-                <input type="number" class="lock-digit" id="digit3" min="0" max="9" maxlength="1">
+            <div class="lock-image-container">
+                <img src="foto-candado.jpg" alt="Libro caja fuerte" class="lock-image">
             </div>
-            <div class="lock-error hidden" id="lockError">
-                Combinación incorrecta. Inténtalo de nuevo.
-            </div>
+            <p class="lock-instruction">
+                Usad los tres dígitos para abrir el libro caja fuerte<br>
+                y descubrir vuestro regalo
+            </p>
             <button id="unlockButton" class="start-button">
-                <span>CONTINUAR</span>
+                <span>YA LO HEMOS ABIERTO</span>
                 <span class="arrow">→</span>
             </button>
         </div>
@@ -173,7 +172,7 @@
             </div>
             <h2>
                 Habéis abierto<br>
-                la maleta
+                el libro
             </h2>
             <div class="gift-message">
                 <p>
