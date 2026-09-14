@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Regalo de Boda · Paco & Tania</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Fondo decorativo -->
+    <div class="background">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="stars"></div>
+    </div>
+
+    <main class="landing">
+
+        <div class="top-label">
+            <span></span>
+            UNA MISIÓN MUY ESPECIAL
+            <span></span>
+        </div>
+
+        <div class="title-wrapper">
+
+            <p class="small-title">REGALO DE</p>
+
+            <h1>
+                Boda
+            </h1>
+
+            <div class="ornament">
+                <span></span>
+                <span class="diamond">◆</span>
+                <span></span>
+            </div>
+
+            <h2>
+                Paco <span>&</span> Tania
+            </h2>
+
+        </div>
+
+        <div class="escape-box">
+
+            <div class="escape-label">
+                ROOM ESCAPE
+            </div>
+
+            <p>
+                Una historia de amor.<br>
+                Una misión secreta.<br>
+                Y un regalo que tendréis que descubrir.
+            </p>
+
+        </div>
+
+        <button id="startButton" class="start-button">
+            <span>COMENZAR LA MISIÓN</span>
+            <span class="arrow">→</span>
+        </button>
+
+        <div class="bottom-text">
+            <span>ESTRENO</span>
+            <span class="dot">·</span>
+            <span>2026</span>
+        </div>
+
+    </main>
+
+    <!-- Pantalla de briefing -->
+    <section id="mission" class="mission hidden">
+        <div class="mission-content">
+            <div class="mission-number">
+                BRIEFING
+            </div>
+            <h2>
+                La misión<br>
+                comienza ahora
+            </h2>
+            <p>
+                Paco y Tania, habéis sido seleccionados para una misión muy especial.<br><br>
+                Debéis superar 10 desafíos juntos. Solo si demostráis que os conocéis de verdad, obtendréis los tres dígitos del código secreto.<br><br>
+                ¿Estáis listos?
+            </p>
+            <button id="startMissionButton" class="start-button">
+                <span>COMENZAR</span>
+                <span class="arrow">→</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Contenedor de desafíos -->
+    <section id="challengeContainer" class="challenge-container hidden">
+        <div class="challenge-header">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="challenge-counter">
+                <span id="currentChallenge">1</span> / <span id="totalChallenges">10</span>
+            </div>
+        </div>
+        <div class="challenge-content" id="challengeContent">
+            <!-- El contenido del desafío se genera dinámicamente -->
+        </div>
+    </section>
+
+    <!-- Pantalla de dígitos obtenidos -->
+    <section id="digitsScreen" class="digits-screen hidden">
+        <div class="digits-content">
+            <div class="mission-number">
+                ¡MISIÓN COMPLETADA!
+            </div>
+            <h2>
+                Habéis obtenido<br>
+                los tres dígitos
+            </h2>
+            <div class="digits-display">
+                <div class="digit-box">0</div>
+                <div class="digit-box">5</div>
+                <div class="digit-box">1</div>
+            </div>
+            <p class="hint-text">
+                Estos tres números indican la cantidad de dinero que os he dado para vuestra boda
+            </p>
+            <button id="openLockButton" class="start-button">
+                <span>ABRIR EL CANDADO</span>
+                <span class="arrow">→</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Pantalla del candado -->
+    <section id="lockScreen" class="lock-screen hidden">
+        <div class="lock-content">
+            <div class="mission-number">
+                CANDADO DE LA MALETA
+            </div>
+            <h2>
+                Introducid<br>
+                la combinación
+            </h2>
+            <div class="lock-inputs">
+                <input type="number" class="lock-digit" id="digit1" min="0" max="9" maxlength="1">
+                <input type="number" class="lock-digit" id="digit2" min="0" max="9" maxlength="1">
+                <input type="number" class="lock-digit" id="digit3" min="0" max="9" maxlength="1">
+            </div>
+            <div class="lock-error hidden" id="lockError">
+                Combinación incorrecta. Inténtalo de nuevo.
+            </div>
+            <button id="unlockButton" class="start-button">
+                <span>CONTINUAR</span>
+                <span class="arrow">→</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Pantalla final -->
+    <section id="finalScreen" class="final-screen hidden">
+        <div class="final-content">
+            <div class="mission-number">
+                ¡ENHORABUENA!
+            </div>
+            <h2>
+                Habéis abierto<br>
+                la maleta
+            </h2>
+            <div class="gift-message">
+                <p>
+                    Dentro encontraréis el regalo que os hemos dado para vuestra boda.<br><br>
+                    501€ para que empiece vuestra nueva aventura juntos.<br><br>
+                    ¡Felicidades, Paco y Tania!
+                </p>
+            </div>
+            <button id="restartButton" class="start-button">
+                <span>VOLVER AL INICIO</span>
+                <span class="arrow">→</span>
+            </button>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
