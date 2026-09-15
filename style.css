@@ -1134,6 +1134,10 @@ h2 span {
         width: 25px;
     }
 
+    .small-title {
+        margin-bottom: 10px;
+    }
+
     .escape-box {
         padding: 18px 15px;
         margin-top: 30px;

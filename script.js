@@ -143,6 +143,7 @@ function showScreen(screen) {
 // Event listeners
 startButton.addEventListener("click", () => {
     showScreen(mission);
+    document.querySelector(".mission-content").scrollTop = 0;
 });
 
 startMissionButton.addEventListener("click", () => {
