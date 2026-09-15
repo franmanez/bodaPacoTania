@@ -1,7 +1,7 @@
 const startButton = document.getElementById("startButton");
 const startMissionButton = document.getElementById("startMissionButton");
+const skipToEndButton = document.getElementById("skipToEndButton"); // TEMPORAL
 const openLockButton = document.getElementById("openLockButton");
-const unlockButton = document.getElementById("unlockButton");
 const restartButton = document.getElementById("restartButton");
 
 const landing = document.querySelector(".landing");
@@ -9,7 +9,6 @@ const mission = document.getElementById("mission");
 const challengeContainer = document.getElementById("challengeContainer");
 const digitsScreen = document.getElementById("digitsScreen");
 const lockScreen = document.getElementById("lockScreen");
-const finalScreen = document.getElementById("finalScreen");
 
 let currentChallengeIndex = 0;
 
@@ -20,7 +19,7 @@ const challenges = [
         target: "paco",
         question: "¿Cómo se llama el colegio donde estudió Tania?",
         validAnswers: ["academia san gervasio", "san gervasio"],
-        hint: "Pista: Un lugar muy especial en la vida de Tania"
+        hint: "Pista: Si te casaste con ella, seguro que lo sabes..."
     },
     {
         type: "drag",
@@ -34,36 +33,53 @@ const challenges = [
         ]
     },
     {
-        type: "text",
+        type: "photo",
         target: "tania",
-        question: "¿Cuál es la comida que más odia Tania?",
-        validAnswers: ["cebolla", "cebollas"],
-        hint: "Pista: Algo que hace llorar... pero no de emoción"
+        question: "¿Dónde y cuándo se tomó esta foto?",
+        image: "images/foto01.png",
+        validAnswers: {
+            place: ["begur"],
+            year: ["2006"]
+        },
+        hint: "Pista: Un sitio al que íbamos mucho cuando éramos jóvenes y guapos (ahora solo somos guapos)... ¡hace siglos! Aunque en esa época Paco ya no era tan joven xD"
     },
     {
         type: "memory",
         question: "Encuentra las 8 parejas de familiares",
-        pairs: ["Familiar 1", "Familiar 2", "Familiar 3", "Familiar 4", "Familiar 5", "Familiar 6", "Familiar 7", "Familiar 8"],
+        pairs: ["images/01.png", "images/02.png", "images/03.png", "images/04.png", "images/05.png", "images/06.png", "images/07.png", "images/08.png"],
         timeLimit: 35
     },
     {
-        type: "text",
-        question: "¿Qué significan las siglas FBA en Amazon?",
-        validAnswers: ["fulfillment by amazon", "fulfilled by amazon"],
-        hint: "Pista: El corazón de vuestro negocio juntos"
+        type: "audio",
+        question: "¿Qué canción estábamos bailando en este momento?",
+        image: "images/pacofran.gif",
+        options: [
+            "Mi carro - Manolo Escobar",
+            "La Macarena - Los del Río",
+            "Así es la vida - Julio Iglesias",
+            "Dubidubidu - Christell"
+        ],
+        correctAnswer: 3,
+        videoUrl: "https://www.youtube.com/embed/K3V0XvCE4ak",
+        hint: "Pista: Escucha bien... es una canción infantil que nos sabíamos de memoria"
     },
     {
-        type: "text",
+        type: "radio",
         target: "tania",
-        question: "¿Qué manía tiene Paco que te vuelve loca?",
-        validAnswers: ["dejar la ropa tirada", "ropa tirada", "dejar ropa tirada"],
-        hint: "Pista: Algo que siempre acaba en el suelo..."
+        question: "Pregunta seria: ¿Quién da más la chapa en la relación?",
+        options: [
+            "Paco",
+            "Paco Oliva",
+            "Todas las anteriores son correctas"
+        ],
+        hint: "Pista: Si estás leyendo esto, probablemente ya sabes la respuesta..."
     },
     {
-        type: "flash-sequence",
-        question: "Memoriza y reproduce la secuencia",
-        rounds: 5,
-        timeLimit: 40
+        type: "text",
+        target: "paco",
+        question: "¿Cuáles son los 8 apellidos de Tania en orden?",
+        validAnswers: ["pendiente"],
+        hint: "Orden:\n1) Primer apellido del padre\n2) Primer apellido de la madre\n3) Segundo apellido del padre\n4) Segundo apellido de la madre\n5) Segundo apellido del abuelo paterno\n6) Segundo apellido del abuelo materno\n7) Segundo apellido de la abuela paterna\n8) Segundo apellido de la abuela materna"
     },
     {
         type: "reaction",
@@ -76,27 +92,42 @@ const challenges = [
             { name: "Pulp Fiction", year: 1994, correct: true },
             { name: "Forrest Gump", year: 1994, correct: true },
             { name: "Frozen", year: 2013, correct: false },
-            { name: "El Rey León", year: 1994, correct: true }
+            { name: "El Rey León", year: 1994, correct: true },
+            { name: "Terminator 2", year: 1991, correct: true },
+            { name: "Jurassic Park", year: 1993, correct: true },
+            { name: "El Silencio de los Corderos", year: 1991, correct: true },
+            { name: "Toy Story", year: 1995, correct: true },
+            { name: "Gladiator", year: 2000, correct: false },
+            { name: "Harry Potter", year: 2001, correct: false },
+            { name: "El Señor de los Anillos", year: 2001, correct: false },
+            { name: "Braveheart", year: 1995, correct: true },
+            { name: "Inception", year: 2010, correct: false },
+            { name: "Batman Begins", year: 2005, correct: false },
+            { name: "Salvar al Soldado Ryan", year: 1998, correct: true },
+            { name: "American Beauty", year: 1999, correct: true }
         ],
-        timeLimit: 30
+        targetScore: 10
+    },
+    {
+        type: "anecdote",
+        target: "paco",
+        question: "¿Qué pasó al principio de la relación entre Tania y Davinia?",
+        options: [
+            "Fueron mejores amigas desde el primer día",
+            "Tania no le hablaba ni le miraba a la cara... y estuvo así casi un año"
+        ],
+        explanation: "Cuando yo empecé a salir con Davinia, Tania tenía 2 años y medio. Yo siempre estaba con ella, jugaba con ella... ella siempre me perseguía. Pero cuando conoció a Davinia, ni le hablaba ni le miraba a la cara. Si la veía, se ponía seria y se iba. Así estuvo casi un año. Davinia había venido a quitarle al 'Tete Fran'... y eso a Tania no le gustó nada :P"
     },
     {
         type: "text",
-        question: "¿En qué año empezasteis a trabajar con Amazon?",
-        validAnswers: ["2020", "2021", "2022"],
-        hint: "Pista: Un año reciente que cambió vuestras vidas"
-    },
-    {
-        type: "cipher",
-        question: "Descifra este mensaje: 16-5-12-9-3-21-12-1",
-        hint: "Pista: Cada número es una letra del alfabeto (A=1, B=2...)",
-        answer: "PELICULA"
+        question: "Cada mañana, Fran se hace esta pregunta al despertarse... Si un ciempiés tiene cien patas, ¿cuántos ojos tiene un piojo?",
+        validAnswers: ["3.14", "3,14", "3.1416", "3,1416", "3.14159", "3,14159", "3.14159265", "3,14159265", "pi", "π"]
     }
 ];
 
 // Navegación entre pantallas
 function showScreen(screen) {
-    const screens = [landing, mission, challengeContainer, digitsScreen, lockScreen, finalScreen];
+    const screens = [landing, mission, challengeContainer, digitsScreen, lockScreen];
     
     screens.forEach(s => {
         if (s !== screen) {
@@ -120,12 +151,13 @@ startMissionButton.addEventListener("click", () => {
     loadChallenge(0);
 });
 
-openLockButton.addEventListener("click", () => {
+// BOTÓN TEMPORAL PARA TEST - ELIMINAR DESPUÉS
+skipToEndButton.addEventListener("click", () => {
     showScreen(lockScreen);
 });
 
-unlockButton.addEventListener("click", () => {
-    showScreen(finalScreen);
+openLockButton.addEventListener("click", () => {
+    showScreen(lockScreen);
 });
 
 restartButton.addEventListener("click", () => {
@@ -145,16 +177,20 @@ function loadChallenge(index) {
 
     if (challenge.type === "text") {
         renderTextChallenge(challenge, content);
+    } else if (challenge.type === "radio") {
+        renderRadioChallenge(challenge, content);
+    } else if (challenge.type === "photo") {
+        renderPhotoChallenge(challenge, content);
+    } else if (challenge.type === "audio") {
+        renderAudioChallenge(challenge, content);
+    } else if (challenge.type === "anecdote") {
+        renderAnecdoteChallenge(challenge, content);
     } else if (challenge.type === "drag") {
         renderDragChallenge(challenge, content);
     } else if (challenge.type === "memory") {
         renderMemoryChallenge(challenge, content);
-    } else if (challenge.type === "flash-sequence") {
-        renderFlashSequenceChallenge(challenge, content);
     } else if (challenge.type === "reaction") {
         renderReactionChallenge(challenge, content);
-    } else if (challenge.type === "cipher") {
-        renderCipherChallenge(challenge, content);
     }
 }
 
@@ -180,12 +216,170 @@ function renderTextChallenge(challenge, content) {
     });
 }
 
+// Desafío de radio buttons
+function renderRadioChallenge(challenge, content) {
+    const targetLabel = challenge.target 
+        ? `<div class="challenge-target">Pregunta para ${challenge.target === "paco" ? "Paco" : "Tania"}</div>` 
+        : "";
+
+    let optionsHTML = challenge.options.map((option, index) => `
+        <label class="radio-option">
+            <input type="radio" name="radioAnswer" value="${option}">
+            <span class="radio-label">${option}</span>
+        </label>
+    `).join('');
+
+    content.innerHTML = `
+        ${targetLabel}
+        <div class="challenge-question">${challenge.question}</div>
+        <div class="challenge-hint">${challenge.hint}</div>
+        <div class="radio-container">
+            ${optionsHTML}
+        </div>
+        <button class="start-button" id="submitRadio">
+            <span>CONTINUAR</span>
+            <span class="arrow">→</span>
+        </button>
+    `;
+
+    document.getElementById("submitRadio").addEventListener("click", () => {
+        nextChallenge();
+    });
+}
+
+// Desafío de foto con dos inputs
+function renderPhotoChallenge(challenge, content) {
+    const targetLabel = challenge.target 
+        ? `<div class="challenge-target">Pregunta para ${challenge.target === "paco" ? "Paco" : "Tania"}</div>` 
+        : "";
+
+    content.innerHTML = `
+        ${targetLabel}
+        <div class="challenge-question">${challenge.question}</div>
+        <div class="photo-container">
+            <img src="${challenge.image}" alt="Foto del recuerdo" class="challenge-photo">
+        </div>
+        <div class="challenge-hint">${challenge.hint}</div>
+        <div class="photo-inputs">
+            <div class="photo-input-group">
+                <label class="photo-label">¿Dónde?</label>
+                <input type="text" class="challenge-input" id="placeInput" placeholder="Lugar...">
+            </div>
+            <div class="photo-input-group">
+                <label class="photo-label">¿Cuándo?</label>
+                <input type="text" class="challenge-input" id="yearInput" placeholder="Año...">
+            </div>
+        </div>
+        <button class="start-button" id="submitPhoto">
+            <span>CONTINUAR</span>
+            <span class="arrow">→</span>
+        </button>
+    `;
+
+    document.getElementById("submitPhoto").addEventListener("click", () => {
+        nextChallenge();
+    });
+}
+
+// Desafío de audio con gif
+function renderAudioChallenge(challenge, content) {
+    content.innerHTML = `
+        <div class="challenge-question">${challenge.question}</div>
+        <div class="audio-gif-container">
+            <img src="${challenge.image}" alt="Bailando" class="audio-gif">
+        </div>
+        <div class="challenge-hint">${challenge.hint}</div>
+        <div class="radio-container">
+            ${challenge.options.map((option, index) => `
+                <label class="radio-option">
+                    <input type="radio" name="audioAnswer" value="${index}">
+                    <span class="radio-label">${option}</span>
+                </label>
+            `).join('')}
+        </div>
+        <button class="start-button" id="submitAudio">
+            <span>CONTINUAR</span>
+            <span class="arrow">→</span>
+        </button>
+    `;
+
+    document.getElementById("submitAudio").addEventListener("click", () => {
+        const selected = document.querySelector('input[name="audioAnswer"]:checked');
+        if (selected && parseInt(selected.value) === challenge.correctAnswer) {
+            content.innerHTML = `
+                <div class="video-explanation-screen">
+                    <div class="video-explanation-title">¡CORRECTO! Esta era la canción...</div>
+                    <div class="video-explanation-container">
+                        <iframe width="100%" height="315" src="${challenge.videoUrl}?autoplay=1" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <button class="start-button" id="continueVideo">
+                    <span>CONTINUAR</span>
+                    <span class="arrow">→</span>
+                </button>
+            `;
+            document.getElementById("continueVideo").addEventListener("click", () => {
+                nextChallenge();
+            });
+        } else {
+            nextChallenge();
+        }
+    });
+}
+
+// Desafío de anécdota con explicación
+function renderAnecdoteChallenge(challenge, content) {
+    const targetLabel = challenge.target 
+        ? `<div class="challenge-target">Pregunta para ${challenge.target === "paco" ? "Paco" : "Tania"}</div>` 
+        : "";
+
+    let optionsHTML = challenge.options.map((option, index) => `
+        <label class="radio-option">
+            <input type="radio" name="anecdoteAnswer" value="${index}">
+            <span class="radio-label">${option}</span>
+        </label>
+    `).join('');
+
+    content.innerHTML = `
+        ${targetLabel}
+        <div class="challenge-question">${challenge.question}</div>
+        <div class="radio-container">
+            ${optionsHTML}
+        </div>
+        <button class="start-button" id="submitAnecdote">
+            <span>CONTINUAR</span>
+            <span class="arrow">→</span>
+        </button>
+    `;
+
+    document.getElementById("submitAnecdote").addEventListener("click", () => {
+        const selected = document.querySelector('input[name="anecdoteAnswer"]:checked');
+        if (selected && selected.value === "1") {
+            content.innerHTML = `
+                <div class="anecdote-explanation">
+                    <p>${challenge.explanation}</p>
+                </div>
+                <button class="start-button" id="continueAnecdote">
+                    <span>CONTINUAR</span>
+                    <span class="arrow">→</span>
+                </button>
+            `;
+            document.getElementById("continueAnecdote").addEventListener("click", () => {
+                nextChallenge();
+            });
+        } else {
+            nextChallenge();
+        }
+    });
+}
+
 // Desafío de arrastrar y ordenar
 function renderDragChallenge(challenge, content) {
     const shuffled = [...challenge.items].sort(() => Math.random() - 0.5);
     
     content.innerHTML = `
         <div class="challenge-question">${challenge.question}</div>
+        <div class="drag-hint">Arrastra para ordenar o usa las flechas</div>
         <div class="drag-container" id="dragContainer"></div>
         <button class="start-button" id="checkOrder">
             <span>CONTINUAR</span>
@@ -194,43 +388,83 @@ function renderDragChallenge(challenge, content) {
     `;
 
     const container = document.getElementById("dragContainer");
+    let draggedItem = null;
+    let touchStartY = 0;
+    let touchItem = null;
+    let placeholder = null;
+
     shuffled.forEach((item, index) => {
         const div = document.createElement("div");
         div.className = "drag-item";
         div.draggable = true;
         div.dataset.year = item.year;
-        div.textContent = item.text;
+        div.innerHTML = `<span class="drag-text">${item.text}</span>`;
         container.appendChild(div);
     });
 
-    let draggedItem = null;
-
+    // Desktop drag events
     container.querySelectorAll(".drag-item").forEach(item => {
         item.addEventListener("dragstart", (e) => {
             draggedItem = item;
-            setTimeout(() => item.style.opacity = "0.5", 0);
+            setTimeout(() => item.classList.add("dragging"), 0);
         });
 
         item.addEventListener("dragend", (e) => {
-            item.style.opacity = "1";
+            item.classList.remove("dragging");
+            draggedItem = null;
         });
 
         item.addEventListener("dragover", (e) => {
             e.preventDefault();
-        });
-
-        item.addEventListener("drop", (e) => {
-            e.preventDefault();
-            if (draggedItem !== item) {
-                const allItems = [...container.querySelectorAll(".drag-item")];
-                const draggedIndex = allItems.indexOf(draggedItem);
-                const droppedIndex = allItems.indexOf(item);
-
-                if (draggedIndex < droppedIndex) {
-                    item.parentNode.insertBefore(draggedItem, item.nextSibling);
+            if (draggedItem && draggedItem !== item) {
+                const rect = item.getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+                
+                if (e.clientY < midY) {
+                    container.insertBefore(draggedItem, item);
                 } else {
-                    item.parentNode.insertBefore(draggedItem, item);
+                    container.insertBefore(draggedItem, item.nextSibling);
                 }
+            }
+        });
+    });
+
+    // Touch events for mobile
+    container.querySelectorAll(".drag-item").forEach(item => {
+        item.addEventListener("touchstart", (e) => {
+            touchItem = item;
+            touchStartY = e.touches[0].clientY;
+            item.classList.add("dragging");
+        }, { passive: true });
+
+        item.addEventListener("touchmove", (e) => {
+            if (!touchItem) return;
+            e.preventDefault();
+            
+            const touchY = e.touches[0].clientY;
+            const allItems = [...container.querySelectorAll(".drag-item")];
+            const currentIndex = allItems.indexOf(touchItem);
+            
+            // Find the item we're hovering over
+            for (let i = 0; i < allItems.length; i++) {
+                if (allItems[i] === touchItem) continue;
+                const rect = allItems[i].getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+                
+                if (touchY < midY && i < currentIndex) {
+                    container.insertBefore(touchItem, allItems[i]);
+                    break;
+                } else if (touchY > midY && i > currentIndex) {
+                    container.insertBefore(touchItem, allItems[i].nextSibling);
+                    break;
+                }
+            }
+        }, { passive: false });
+
+        item.addEventListener("touchend", (e) => {
+            if (touchItem) {
+                touchItem.classList.remove("dragging");
+                touchItem = null;
             }
         });
     });
@@ -269,7 +503,7 @@ function renderMemoryChallenge(challenge, content) {
             const card = document.createElement("div");
             card.className = "memory-card";
             card.dataset.value = pair;
-            card.innerHTML = `<div class="card-inner"><div class="card-front">?</div><div class="card-back">${pair}</div></div>`;
+            card.innerHTML = `<div class="card-inner"><div class="card-front">?</div><div class="card-back"><img src="${pair}" alt="Familiar"></div></div>`;
             grid.appendChild(card);
 
             card.addEventListener("click", () => {
@@ -324,130 +558,20 @@ function renderMemoryChallenge(challenge, content) {
     initGame();
 }
 
-// Desafío de secuencia relámpago
-function renderFlashSequenceChallenge(challenge, content) {
-    let timeLeft = challenge.timeLimit;
-    let currentRound = 1;
-    let sequence = [];
-    let playerSequence = [];
-    let isShowingSequence = false;
-    let timer;
-    const colors = ["red", "blue", "green", "yellow"];
-    
-    function initGame() {
-        content.innerHTML = `
-            <div class="challenge-question">${challenge.question}</div>
-            <div class="flash-info">
-                <div class="flash-timer">Tiempo: <span id="flashTimeDisplay">${timeLeft}</span>s</div>
-                <div class="flash-round">Ronda: <span id="flashRoundDisplay">1</span> / ${challenge.rounds}</div>
-            </div>
-            <div class="flash-grid" id="flashGrid">
-                <div class="flash-btn red" data-color="red"></div>
-                <div class="flash-btn blue" data-color="blue"></div>
-                <div class="flash-btn green" data-color="green"></div>
-                <div class="flash-btn yellow" data-color="yellow"></div>
-            </div>
-            <div class="flash-status" id="flashStatus">Observa la secuencia...</div>
-            <button class="start-button" id="skipFlash" style="margin-top: 20px;">
-                <span>CONTINUAR</span>
-                <span class="arrow">→</span>
-            </button>
-        `;
-        
-        document.getElementById("skipFlash").addEventListener("click", () => {
-            clearInterval(timer);
-            nextChallenge();
-        });
-        
-        document.querySelectorAll(".flash-btn").forEach(btn => {
-            btn.addEventListener("click", () => handleFlashClick(btn));
-        });
-        
-        timer = setInterval(() => {
-            timeLeft--;
-            const display = document.getElementById("flashTimeDisplay");
-            if (display) display.textContent = timeLeft;
-            
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                setTimeout(() => nextChallenge(), 500);
-            }
-        }, 1000);
-        
-        setTimeout(() => showSequence(), 1000);
-    }
-    
-    function showSequence() {
-        isShowingSequence = true;
-        sequence.push(colors[Math.floor(Math.random() * 4)]);
-        
-        document.getElementById("flashStatus").textContent = "Observa...";
-        
-        let i = 0;
-        const interval = setInterval(() => {
-            if (i >= sequence.length) {
-                clearInterval(interval);
-                isShowingSequence = false;
-                playerSequence = [];
-                document.getElementById("flashStatus").textContent = "Tu turno...";
-                return;
-            }
-            
-            const btn = document.querySelector(`.flash-btn.${sequence[i]}`);
-            btn.classList.add("active");
-            setTimeout(() => btn.classList.remove("active"), 400);
-            i++;
-        }, 600);
-    }
-    
-    function handleFlashClick(btn) {
-        if (isShowingSequence) return;
-        
-        const color = btn.dataset.color;
-        playerSequence.push(color);
-        
-        btn.classList.add("active");
-        setTimeout(() => btn.classList.remove("active"), 200);
-        
-        const currentIndex = playerSequence.length - 1;
-        
-        if (playerSequence[currentIndex] !== sequence[currentIndex]) {
-            document.getElementById("flashStatus").textContent = "¡Error! Reiniciando ronda...";
-            setTimeout(() => {
-                playerSequence = [];
-                showSequence();
-            }, 1500);
-        } else if (playerSequence.length === sequence.length) {
-            if (currentRound === challenge.rounds) {
-                clearInterval(timer);
-                document.getElementById("flashStatus").textContent = "¡Completado!";
-                setTimeout(() => nextChallenge(), 1000);
-            } else {
-                currentRound++;
-                document.getElementById("flashRoundDisplay").textContent = currentRound;
-                document.getElementById("flashStatus").textContent = "¡Correcto! Siguiente ronda...";
-                setTimeout(() => showSequence(), 1200);
-            }
-        }
-    }
-    
-    initGame();
-}
-
 // Desafío de reacción
 function renderReactionChallenge(challenge, content) {
     const shuffled = [...challenge.movies].sort(() => Math.random() - 0.5);
-    let correctClicks = 0;
-    let wrongClicks = 0;
-    let timeLeft = challenge.timeLimit;
+    let attempts = 0;
 
     content.innerHTML = `
         <div class="challenge-question">${challenge.question}</div>
-        <div class="reaction-timer">Tiempo: <span id="timeDisplay">${timeLeft}</span>s</div>
+        <div class="reaction-info">
+            <div class="reaction-score">Intento: <span id="attemptDisplay">1</span></div>
+            <div class="reaction-feedback" id="reactionFeedback"></div>
+        </div>
         <div class="reaction-grid" id="reactionGrid"></div>
-        <div class="reaction-score">Aciertos: <span id="scoreDisplay">0</span></div>
-        <button class="start-button" id="skipReaction" style="margin-top: 20px;">
-            <span>CONTINUAR</span>
+        <button class="start-button" id="validateReaction">
+            <span>VALIDAR SELECCIÓN</span>
             <span class="arrow">→</span>
         </button>
     `;
@@ -460,52 +584,45 @@ function renderReactionChallenge(challenge, content) {
         btn.dataset.correct = movie.correct;
         
         btn.addEventListener("click", () => {
-            if (btn.classList.contains("clicked")) return;
-            
-            btn.classList.add("clicked");
-            if (movie.correct) {
-                btn.classList.add("correct");
-                correctClicks++;
-            } else {
-                btn.classList.add("wrong");
-                wrongClicks++;
-            }
-            
-            document.getElementById("scoreDisplay").textContent = correctClicks;
+            btn.classList.toggle("selected");
         });
-    });
-
-    document.getElementById("skipReaction").addEventListener("click", () => {
-        clearInterval(timer);
-        nextChallenge();
-    });
-
-    const timer = setInterval(() => {
-        timeLeft--;
-        document.getElementById("timeDisplay").textContent = timeLeft;
         
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            document.getElementById("timeDisplay").textContent = "0";
-        }
-    }, 1000);
-}
-
-// Desafío de cifrado
-function renderCipherChallenge(challenge, content) {
-    content.innerHTML = `
-        <div class="challenge-question">${challenge.question}</div>
-        <div class="challenge-hint">${challenge.hint}</div>
-        <input type="text" class="challenge-input" id="cipherInput" placeholder="Escribe cualquier cosa...">
-        <button class="start-button" id="checkCipher">
-            <span>CONTINUAR</span>
-            <span class="arrow">→</span>
-        </button>
-    `;
-
-    document.getElementById("checkCipher").addEventListener("click", () => {
-        nextChallenge();
+        grid.appendChild(btn);
     });
+
+    document.getElementById("validateReaction").addEventListener("click", () => {
+        const selected = document.querySelectorAll(".reaction-btn.selected");
+        let correctCount = 0;
+        let wrongCount = 0;
+        
+        selected.forEach(btn => {
+            if (btn.dataset.correct === "true") {
+                correctCount++;
+            } else {
+                wrongCount++;
+            }
+        });
+        
+        const feedback = document.getElementById("reactionFeedback");
+        
+        if (correctCount === challenge.targetScore && wrongCount === 0) {
+            feedback.innerHTML = `<span class="feedback-success">¡PERFECTO! ${correctCount} correctas</span>`;
+            setTimeout(() => nextChallenge(), 1500);
+        } else {
+            attempts++;
+            document.getElementById("attemptDisplay").textContent = attempts + 1;
+            feedback.innerHTML = `<span class="feedback-info">${correctCount} correctas, ${wrongCount} incorrectas</span>`;
+        }
+    });
+
+    // BOTÓN TEMPORAL PARA TEST - ELIMINAR DESPUÉS
+    const skipButton = document.createElement("button");
+    skipButton.className = "start-button";
+    skipButton.style.marginTop = "15px";
+    skipButton.style.opacity = "0.5";
+    skipButton.innerHTML = `<span>SALTAR (TEST)</span><span class="arrow">→</span>`;
+    skipButton.addEventListener("click", () => nextChallenge());
+    content.appendChild(skipButton);
 }
 
 // Avanzar al siguiente desafío

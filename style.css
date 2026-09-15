@@ -356,8 +356,10 @@ h2 span {
 
 .mission-content {
     max-width: 650px;
-
     padding: 40px;
+    max-height: 90vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .mission-number {
@@ -441,9 +443,19 @@ h2 span {
     background: radial-gradient(circle at center, #292219, #080808 70%);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    padding: 40px 20px;
+    padding: 80px 20px 40px;
+    overflow-y: auto;
+}
+
+.challenge-content {
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .challenge-header {
@@ -477,12 +489,6 @@ h2 span {
     color: var(--gold);
 }
 
-.challenge-content {
-    max-width: 700px;
-    width: 100%;
-    text-align: center;
-}
-
 .challenge-target {
     display: inline-block;
     font-size: 11px;
@@ -505,10 +511,16 @@ h2 span {
 }
 
 .challenge-hint {
-    font-size: 13px;
-    color: rgba(214, 184, 120, 0.7);
+    font-size: 18px;
+    color: rgba(214, 184, 120, 0.8);
     margin-bottom: 30px;
     font-style: italic;
+    font-weight: 500;
+    white-space: pre-line;
+    text-align: left;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .challenge-input {
@@ -530,6 +542,234 @@ h2 span {
     outline: none;
     border-color: var(--gold);
     background: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================
+    RADIO BUTTONS
+ ========================= */
+
+.radio-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 30px 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: rgba(214, 184, 120, 0.08);
+    border: 1px solid rgba(214, 184, 120, 0.25);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.radio-option:hover {
+    background: rgba(214, 184, 120, 0.15);
+    border-color: var(--gold);
+    transform: translateX(5px);
+}
+
+.radio-option input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--gold);
+}
+
+.radio-label {
+    font-size: 16px;
+    color: var(--cream);
+    font-family: "Montserrat", sans-serif;
+}
+
+.radio-option input[type="radio"]:checked + .radio-label {
+    color: var(--gold);
+    font-weight: 500;
+}
+
+/* =========================
+    PHOTO CHALLENGE
+ ========================= */
+
+.photo-container {
+    margin: 20px 0;
+}
+
+.challenge-photo {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    border: 2px solid rgba(214, 184, 120, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.photo-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 30px 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.photo-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.photo-label {
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* =========================
+    AUDIO CHALLENGE
+ ========================= */
+
+.audio-gif-container {
+    margin: 20px 0;
+}
+
+.audio-gif {
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 8px;
+    border: 2px solid rgba(214, 184, 120, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.audio-players {
+    margin: 25px 0;
+}
+
+.audio-player-label {
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.audio-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.audio-btn {
+    padding: 12px 20px;
+    background: rgba(214, 184, 120, 0.1);
+    border: 1px solid rgba(214, 184, 120, 0.4);
+    border-radius: 6px;
+    color: var(--cream);
+    font-family: "Montserrat", sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.audio-btn:hover {
+    background: rgba(214, 184, 120, 0.2);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+}
+
+.audio-btn.playing {
+    background: rgba(214, 184, 120, 0.3);
+    border-color: var(--gold);
+    box-shadow: 0 0 15px rgba(214, 184, 120, 0.3);
+}
+
+.audio-icon {
+    font-size: 14px;
+}
+
+/* =========================
+    VIDEO CONTAINER
+ ========================= */
+
+.video-explanation-screen {
+    background: linear-gradient(135deg, rgba(214, 184, 120, 0.15), rgba(214, 184, 120, 0.05));
+    border: 2px solid rgba(214, 184, 120, 0.4);
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.video-explanation-title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 24px;
+    color: var(--gold);
+    margin-bottom: 20px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.video-explanation-container {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.video-explanation-container iframe {
+    display: block;
+    width: 100%;
+    height: 315px;
+}
+
+@media (max-width: 600px) {
+    .video-explanation-screen {
+        padding: 15px;
+    }
+    
+    .video-explanation-title {
+        font-size: 18px;
+    }
+    
+    .video-explanation-container iframe {
+        height: 200px;
+    }
+}
+
+/* =========================
+    ANECDOTE CHALLENGE
+ ========================= */
+
+.anecdote-explanation {
+    margin: 30px 0;
+    padding: 30px;
+    background: rgba(214, 184, 120, 0.08);
+    border: 1px solid rgba(214, 184, 120, 0.3);
+    border-radius: 8px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.anecdote-explanation p {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 20px;
+    line-height: 1.8;
+    color: #d8d1c4;
+    font-style: italic;
 }
 
 /* =========================
@@ -566,6 +806,30 @@ h2 span {
 
 .drag-item:active {
     cursor: grabbing;
+}
+
+.drag-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drag-text {
+    text-align: center;
+}
+
+.drag-hint {
+    font-size: 14px;
+    color: rgba(214, 184, 120, 0.7);
+    margin-bottom: 20px;
+    text-align: center;
+    font-style: italic;
+}
+
+.drag-item.dragging {
+    opacity: 0.5;
+    transform: scale(1.02);
+    box-shadow: 0 5px 20px rgba(214, 184, 120, 0.3);
 }
 
 /* =========================
@@ -622,6 +886,7 @@ h2 span {
     font-size: 14px;
     padding: 8px;
     text-align: center;
+    overflow: hidden;
 }
 
 .card-front {
@@ -639,85 +904,48 @@ h2 span {
     transform: rotateY(180deg);
 }
 
+.card-back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
 .memory-card.matched .card-back {
     background: rgba(214, 184, 120, 0.35);
     border-color: var(--gold-light);
 }
 
 /* =========================
-    FLASH SEQUENCE GAME
+    REACTION GAME
  ========================= */
 
-.flash-info {
+.reaction-info {
     display: flex;
     justify-content: center;
     gap: 40px;
     margin-bottom: 25px;
+    align-items: center;
 }
 
-.flash-timer,
-.flash-round {
+.reaction-score {
     font-size: 16px;
     color: var(--gold);
     letter-spacing: 2px;
 }
 
-.flash-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    max-width: 280px;
-    margin: 0 auto 25px;
-}
-
-.flash-btn {
-    aspect-ratio: 1;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    opacity: 0.4;
-    border: 3px solid transparent;
-}
-
-.flash-btn.red {
-    background: #e74c3c;
-}
-
-.flash-btn.blue {
-    background: #3498db;
-}
-
-.flash-btn.green {
-    background: #2ecc71;
-}
-
-.flash-btn.yellow {
-    background: #f39c12;
-}
-
-.flash-btn.active {
-    opacity: 1;
-    transform: scale(1.08);
-    border-color: var(--gold-light);
-    box-shadow: 0 0 30px currentColor;
-}
-
-.flash-status {
+.reaction-feedback {
     font-size: 16px;
-    color: var(--gold-light);
-    font-style: italic;
-    margin-bottom: 10px;
+    letter-spacing: 1px;
 }
 
-/* =========================
-    REACTION GAME
- ========================= */
+.feedback-success {
+    color: #2ecc71;
+    font-weight: 500;
+}
 
-.reaction-timer {
-    font-size: 16px;
+.feedback-info {
     color: var(--gold);
-    margin-bottom: 25px;
-    letter-spacing: 2px;
 }
 
 .reaction-grid {
@@ -744,6 +972,12 @@ h2 span {
     border-color: var(--gold);
 }
 
+.reaction-btn.selected {
+    background: rgba(214, 184, 120, 0.25);
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(214, 184, 120, 0.3);
+}
+
 .reaction-btn.clicked {
     pointer-events: none;
 }
@@ -756,12 +990,6 @@ h2 span {
 .reaction-btn.wrong {
     background: rgba(231, 76, 60, 0.3);
     border-color: #e74c3c;
-}
-
-.reaction-score {
-    font-size: 14px;
-    color: var(--gold);
-    letter-spacing: 2px;
 }
 
 /* =========================
@@ -896,6 +1124,7 @@ h2 span {
 
 @media (max-width: 600px) {
 
+    /* Landing */
     .top-label {
         font-size: 8px;
         letter-spacing: 3px;
@@ -918,19 +1147,321 @@ h2 span {
         width: 40px;
     }
 
+    /* Mission */
+    .mission-content {
+        padding: 20px;
+        max-height: 85vh;
+    }
+
+    .mission h2 {
+        font-size: clamp(32px, 8vw, 50px);
+    }
+
+    .mission p {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    /* Challenge Container */
+    .challenge-container {
+        padding: 70px 15px 30px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        align-items: flex-start;
+    }
+
+    .challenge-header {
+        top: 10px;
+        width: 95%;
+    }
+
+    .challenge-content {
+        width: 100%;
+        padding-bottom: 20px;
+    }
+
+    .challenge-target {
+        font-size: 10px;
+        letter-spacing: 3px;
+        padding: 6px 15px;
+        margin-bottom: 15px;
+    }
+
+    .challenge-question {
+        font-size: clamp(20px, 5vw, 28px);
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+
+    .challenge-hint {
+        font-size: 14px;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+
+    .challenge-input {
+        max-width: 100%;
+        padding: 14px 18px;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    /* Buttons */
+    .start-button {
+        margin-top: 20px;
+        padding: 14px 18px;
+        font-size: 10px;
+        letter-spacing: 2px;
+        min-height: 48px;
+    }
+
+    /* Drag items */
+    .drag-container {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .drag-item {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+
+    .drag-hint {
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+
+    /* Memory grid */
     .memory-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        width: 100%;
+        max-width: 380px;
+        margin-bottom: 15px;
+    }
+
+    .memory-card {
+        aspect-ratio: 1;
+        min-height: 65px;
+    }
+
+    .card-front,
+    .card-back {
+        font-size: 8px;
+        padding: 2px;
+    }
+
+    .card-front {
+        font-size: 16px;
+    }
+
+    .card-back img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .memory-timer {
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    /* Reaction grid */
+    .reaction-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .reaction-btn {
+        padding: 12px 8px;
+        font-size: 11px;
+        min-height: 44px;
+    }
+
+    .reaction-info {
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+    .reaction-score {
+        font-size: 14px;
+    }
+
+    .reaction-feedback {
+        font-size: 14px;
+    }
+
+    /* Radio options */
+    .radio-container {
+        gap: 10px;
+        margin: 15px 0;
+        width: 100%;
+    }
+
+    .radio-option {
+        padding: 12px 15px;
+        min-height: 44px;
+    }
+
+    .radio-label {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    /* Photo challenge */
+    .challenge-photo {
+        max-height: 180px;
+        margin: 15px 0;
+    }
+
+    .photo-inputs {
+        gap: 12px;
+        margin: 15px 0;
+    }
+
+    .photo-label {
+        font-size: 12px;
+    }
+
+    /* Audio challenge */
+    .audio-gif {
+        max-height: 180px;
+        margin: 15px 0;
+    }
+
+    .audio-player-label {
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+
+    .audio-buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .audio-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 15px;
+        font-size: 12px;
+    }
+
+    /* Anecdote */
+    .anecdote-explanation {
+        padding: 15px;
+        margin: 15px 0;
+    }
+
+    .anecdote-explanation p {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    /* Digits and Lock */
+    .digits-content,
+    .lock-content,
+    .final-content {
+        padding: 15px;
+    }
+
+    .digits-screen h2,
+    .lock-screen h2,
+    .final-screen h2 {
+        font-size: clamp(28px, 6vw, 40px);
     }
 
     .digit-box,
     .lock-digit {
-        width: 60px;
-        height: 80px;
-        font-size: 36px;
+        width: 55px;
+        height: 70px;
+        font-size: 32px;
     }
 
-    .reaction-grid {
-        grid-template-columns: 1fr;
+    .digits-display,
+    .lock-inputs {
+        gap: 12px;
+        margin: 25px 0;
     }
 
+    .hint-text {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .lock-image {
+        max-height: 200px;
+    }
+
+    .lock-instruction {
+        font-size: 16px;
+    }
+
+    /* Final screen */
+    .gift-message {
+        padding: 15px;
+        margin: 20px 0;
+    }
+
+    .gift-message p {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /* Flash challenge */
+    .flash-info {
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .flash-timer,
+    .flash-round {
+        font-size: 14px;
+    }
+
+    .flash-grid {
+        max-width: 220px;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .flash-status {
+        font-size: 14px;
+    }
+
+    /* Catch area */
+    .catch-area {
+        height: 250px;
+        margin-bottom: 15px;
+    }
+
+    .catch-info {
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+    .catch-timer,
+    .catch-score {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 500px) {
+    .memory-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        max-width: 300px;
+    }
+
+    .memory-card {
+        min-height: 80px;
+    }
+
+    .challenge-question {
+        font-size: 20px;
+    }
 }
