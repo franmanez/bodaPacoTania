@@ -122,6 +122,26 @@ const challenges = [
         type: "text",
         question: "Cada mañana, Fran se hace esta pregunta al despertarse... Si un ciempiés tiene cien patas, ¿cuántos ojos tiene un piojo?",
         validAnswers: ["3.14", "3,14", "3.1416", "3,1416", "3.14159", "3,14159", "3.14159265", "3,14159265", "pi", "π"]
+    },
+    {
+        type: "story",
+        question: "¿Qué debe hacer Paco?",
+        story: "Tania está preparando una media maratón.\n\nPara ello, algunas mañanas se levanta cuando todavía no ha amanecido, se calza las zapatillas y se va a correr mientras Paco y los niños siguen plácidamente durmiendo.\n\nHasta aquí, todo muy bonito.\n\nEl problema viene cuando, durante una de esas gloriosas sesiones de entrenamiento...\n\nel pequeño se despierta.\n\nSon las 6:47 de la mañana.\n\nTiene 2 años.\n\nQuiere a mamá.\n\nY mamá está a varios kilómetros de distancia, corriendo felizmente hacia su objetivo de 21,097 km.\n\nPaco abre un ojo.\n\nMira al niño.\n\nMira el lado vacío de la cama.\n\nMira el reloj.\n\nY comprende que su verdadera media maratón acaba de empezar.",
+        options: [
+            "A) Intentar convencer al niño de que mamá está a punto de volver, aunque ambos sepan perfectamente que eso es mentira.",
+            "B) Sacar todas sus habilidades de entretenimiento infantil: dibujos, juguetes, canciones, cosquillas y cualquier otra técnica permitida por la Convención de Ginebra.",
+            "C) Intentar que el niño vuelva a dormirse mientras piensa: «¿Por qué no seré yo el que está corriendo?»",
+            "D) Todas las anteriores.",
+            "E) Llamar a Tania y decirle: «Cariño, ¿cuántos kilómetros te quedan?»"
+        ],
+        correctAnswer: 3
+    },
+    {
+        type: "reveal",
+        question: "¿Quién es el mejor imitador de Mickey Mouse?",
+        options: ["Paco", "Tania"],
+        images: ["images/pacomickey.png", "images/fotoasombro.png"],
+        explanation: "¡Estas son las caras de tu familia cuando imitas a Mickey Mouse... y cómo te ven en su mente ellas mientras lo haces!"
     }
 ];
 
@@ -192,6 +212,10 @@ function loadChallenge(index) {
         renderMemoryChallenge(challenge, content);
     } else if (challenge.type === "reaction") {
         renderReactionChallenge(challenge, content);
+    } else if (challenge.type === "story") {
+        renderStoryChallenge(challenge, content);
+    } else if (challenge.type === "reveal") {
+        renderRevealChallenge(challenge, content);
     }
 }
 
@@ -245,6 +269,74 @@ function renderRadioChallenge(challenge, content) {
 
     document.getElementById("submitRadio").addEventListener("click", () => {
         nextChallenge();
+    });
+}
+
+// Desafío de historia con texto narrativo
+function renderStoryChallenge(challenge, content) {
+    const storyParagraphs = challenge.story.split('\n\n').map(p => `<p>${p}</p>`).join('');
+    
+    let optionsHTML = challenge.options.map((option, index) => `
+        <label class="radio-option">
+            <input type="radio" name="storyAnswer" value="${index}">
+            <span class="radio-label">${option}</span>
+        </label>
+    `).join('');
+
+    content.innerHTML = `
+        <div class="story-text">${storyParagraphs}</div>
+        <div class="challenge-question">${challenge.question}</div>
+        <div class="radio-container">
+            ${optionsHTML}
+        </div>
+        <button class="start-button" id="submitStory">
+            <span>CONTINUAR</span>
+            <span class="arrow">→</span>
+        </button>
+    `;
+
+    document.getElementById("submitStory").addEventListener("click", () => {
+        nextChallenge();
+    });
+}
+
+// Desafío de revelación con fotos
+function renderRevealChallenge(challenge, content) {
+    let optionsHTML = challenge.options.map((option, index) => `
+        <label class="radio-option">
+            <input type="radio" name="revealAnswer" value="${index}">
+            <span class="radio-label">${option}</span>
+        </label>
+    `).join('');
+
+    content.innerHTML = `
+        <div class="challenge-question">${challenge.question}</div>
+        <div class="radio-container">
+            ${optionsHTML}
+        </div>
+        <button class="start-button" id="submitReveal">
+            <span>VER RESULTADO</span>
+            <span class="arrow">→</span>
+        </button>
+    `;
+
+    document.getElementById("submitReveal").addEventListener("click", () => {
+        content.innerHTML = `
+            <div class="challenge-question">${challenge.question}</div>
+            <div class="reveal-images">
+                <img src="${challenge.images[0]}" alt="Mickey Mouse" class="reveal-image">
+                <img src="${challenge.images[1]}" alt="Cara de asombro" class="reveal-image">
+            </div>
+            <div class="reveal-explanation">${challenge.explanation}</div>
+            <button class="start-button" id="continueReveal">
+                <span>CONTINUAR</span>
+                <span class="arrow">→</span>
+            </button>
+        `;
+
+        document.getElementById("continueReveal").addEventListener("click", () => {
+            nextChallenge();
+        });
     });
 }
 
