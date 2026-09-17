@@ -111,12 +111,11 @@ const challenges = [
     {
         type: "anecdote",
         target: "paco",
-        question: "¿Qué pasó al principio de la relación entre Tania y Davinia?",
+        question: "Cuando Fran empezó a salir con Davinia, Tania tenía 2 años y medio. ¿Qué pasó cuando Fran trajo a Davinia a casa a presentársela?",
         options: [
-            "Fueron mejores amigas desde el primer día",
-            "Tania no le hablaba ni le miraba a la cara... y estuvo así casi un año"
-        ],
-        explanation: "Cuando yo empecé a salir con Davinia, Tania tenía 2 años y medio. Yo siempre estaba con ella, jugaba con ella... ella siempre me perseguía. Pero cuando conoció a Davinia, ni le hablaba ni le miraba a la cara. Si la veía, se ponía seria y se iba. Así estuvo casi un año. Davinia había venido a quitarle al 'Tete Fran'... y eso a Tania no le gustó nada :P"
+            "Tania y Davinia se hicieron mejores amigas desde el primer día. Tania estaba encantada de tener una nueva amiga con la que jugar.",
+            "Tania no le hablaba ni le miraba a la cara. Davinia había venido a quitarle al 'Tete Fran'... y eso a Tania no le gustó nada. Así estuvo casi un año sin querer saber nada de ella, cuando la veía se ponía seria y se iba enfadada."
+        ]
     },
     {
         type: "text",
@@ -446,23 +445,7 @@ function renderAnecdoteChallenge(challenge, content) {
     `;
 
     document.getElementById("submitAnecdote").addEventListener("click", () => {
-        const selected = document.querySelector('input[name="anecdoteAnswer"]:checked');
-        if (selected && selected.value === "1") {
-            content.innerHTML = `
-                <div class="anecdote-explanation">
-                    <p>${challenge.explanation}</p>
-                </div>
-                <button class="start-button" id="continueAnecdote">
-                    <span>CONTINUAR</span>
-                    <span class="arrow">→</span>
-                </button>
-            `;
-            document.getElementById("continueAnecdote").addEventListener("click", () => {
-                nextChallenge();
-            });
-        } else {
-            nextChallenge();
-        }
+        nextChallenge();
     });
 }
 
