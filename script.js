@@ -3,6 +3,7 @@ const startMissionButton = document.getElementById("startMissionButton");
 const skipToEndButton = document.getElementById("skipToEndButton"); // TEMPORAL
 const openLockButton = document.getElementById("openLockButton");
 const restartButton = document.getElementById("restartButton");
+const skipChallengeButton = document.getElementById("skipChallengeButton"); // TEMPORAL - MODO DESARROLLO
 
 const landing = document.querySelector(".landing");
 const mission = document.getElementById("mission");
@@ -72,13 +73,20 @@ const challenges = [
             "Paco Oliva",
             "Todas las anteriores son correctas"
         ],
+        correctAnswer: 2,
+        acceptAny: true,
         hint: "Pista: Si estás leyendo esto, probablemente ya sabes la respuesta..."
     },
     {
         type: "text",
         target: "paco",
         question: "¿Cuáles son los 8 apellidos de Tania en orden?",
-        validAnswers: ["pendiente"],
+        validAnswers: [
+            "linares máñez escudero sánchez muñoz pérez fernández gonzález",
+            "linares maxez escudero sanchez munoz perez fernandez gonzalez",
+            "linares máñez escudero sánchez munoz perez fernandez gonzalez",
+            "linares maxez escudero sanchez muñoz pérez fernández gonzález"
+        ],
         hint: "Orden:\n1) Primer apellido del padre\n2) Primer apellido de la madre\n3) Segundo apellido del padre\n4) Segundo apellido de la madre\n5) Segundo apellido del abuelo paterno\n6) Segundo apellido del abuelo materno\n7) Segundo apellido de la abuela paterna\n8) Segundo apellido de la abuela materna"
     },
     {
@@ -115,7 +123,8 @@ const challenges = [
         options: [
             "Tania y Davinia se hicieron mejores amigas desde el primer día. Tania estaba encantada de tener una nueva amiga con la que jugar.",
             "Tania no le hablaba ni le miraba a la cara. Davinia había venido a quitarle al 'Tete Fran'... y eso a Tania no le gustó nada. Así estuvo casi un año sin querer saber nada de ella, cuando la veía se ponía seria y se iba enfadada."
-        ]
+        ],
+        correctAnswer: 1
     },
     {
         type: "text",
@@ -140,6 +149,7 @@ const challenges = [
         question: "¿Quién es el mejor imitador de Mickey Mouse?",
         options: ["Paco", "Tania"],
         images: ["images/pacomickey.png", "images/fotoasombro.png"],
+        correctAnswer: 0,
         explanation: "¡Estas son las caras de tu familia cuando imitas a Mickey Mouse... y cómo te ven en su mente ellas mientras lo haces!"
     }
 ];
@@ -182,6 +192,11 @@ openLockButton.addEventListener("click", () => {
 
 restartButton.addEventListener("click", () => {
     showScreen(landing);
+});
+
+// BOTÓN TEMPORAL PARA DESARROLLO - ELIMINAR EN PRODUCCIÓN
+skipChallengeButton.addEventListener("click", () => {
+    nextChallenge();
 });
 
 // Cargar desafío
@@ -236,7 +251,25 @@ function renderTextChallenge(challenge, content) {
     `;
 
     document.getElementById("submitAnswer").addEventListener("click", () => {
-        nextChallenge();
+        const input = document.getElementById("textInput");
+        const userAnswer = input.value.trim().toLowerCase();
+        
+        if (challenge.validAnswers && challenge.validAnswers.length > 0) {
+            const isCorrect = challenge.validAnswers.some(answer => 
+                userAnswer === answer.toLowerCase()
+            );
+            
+            if (isCorrect) {
+                input.style.borderColor = "var(--gold)";
+                setTimeout(() => nextChallenge(), 500);
+            } else {
+                input.style.borderColor = "#dc3545";
+                input.value = "";
+                input.placeholder = "Respuesta incorrecta. Intenta de nuevo...";
+            }
+        } else {
+            nextChallenge();
+        }
     });
 }
 
@@ -267,7 +300,23 @@ function renderRadioChallenge(challenge, content) {
     `;
 
     document.getElementById("submitRadio").addEventListener("click", () => {
-        nextChallenge();
+        const selected = document.querySelector('input[name="radioAnswer"]:checked');
+        
+        if (challenge.acceptAny === true) {
+            if (selected) {
+                setTimeout(() => nextChallenge(), 500);
+            } else {
+                alert("Selecciona una opción...");
+            }
+        } else if (challenge.correctAnswer !== undefined) {
+            if (selected && parseInt(selected.value) === challenge.correctAnswer) {
+                setTimeout(() => nextChallenge(), 500);
+            } else {
+                alert("Respuesta incorrecta. Intenta de nuevo...");
+            }
+        } else {
+            nextChallenge();
+        }
     });
 }
 
@@ -320,22 +369,47 @@ function renderRevealChallenge(challenge, content) {
     `;
 
     document.getElementById("submitReveal").addEventListener("click", () => {
-        content.innerHTML = `
-            <div class="challenge-question">${challenge.question}</div>
-            <div class="reveal-images">
-                <img src="${challenge.images[0]}" alt="Mickey Mouse" class="reveal-image">
-                <img src="${challenge.images[1]}" alt="Cara de asombro" class="reveal-image">
-            </div>
-            <div class="reveal-explanation">${challenge.explanation}</div>
-            <button class="start-button" id="continueReveal">
-                <span>CONTINUAR</span>
-                <span class="arrow">→</span>
-            </button>
-        `;
+        const selected = document.querySelector('input[name="revealAnswer"]:checked');
+        
+        if (challenge.correctAnswer !== undefined) {
+            if (selected && parseInt(selected.value) === challenge.correctAnswer) {
+                content.innerHTML = `
+                    <div class="challenge-question">${challenge.question}</div>
+                    <div class="reveal-images">
+                        <img src="${challenge.images[0]}" alt="Mickey Mouse" class="reveal-image">
+                        <img src="${challenge.images[1]}" alt="Cara de asombro" class="reveal-image">
+                    </div>
+                    <div class="reveal-explanation">${challenge.explanation}</div>
+                    <button class="start-button" id="continueReveal">
+                        <span>CONTINUAR</span>
+                        <span class="arrow">→</span>
+                    </button>
+                `;
 
-        document.getElementById("continueReveal").addEventListener("click", () => {
-            nextChallenge();
-        });
+                document.getElementById("continueReveal").addEventListener("click", () => {
+                    nextChallenge();
+                });
+            } else {
+                alert("Respuesta incorrecta. Intenta de nuevo...");
+            }
+        } else {
+            content.innerHTML = `
+                <div class="challenge-question">${challenge.question}</div>
+                <div class="reveal-images">
+                    <img src="${challenge.images[0]}" alt="Mickey Mouse" class="reveal-image">
+                    <img src="${challenge.images[1]}" alt="Cara de asombro" class="reveal-image">
+                </div>
+                <div class="reveal-explanation">${challenge.explanation}</div>
+                <button class="start-button" id="continueReveal">
+                    <span>CONTINUAR</span>
+                    <span class="arrow">→</span>
+                </button>
+            `;
+
+            document.getElementById("continueReveal").addEventListener("click", () => {
+                nextChallenge();
+            });
+        }
     });
 }
 
@@ -369,7 +443,38 @@ function renderPhotoChallenge(challenge, content) {
     `;
 
     document.getElementById("submitPhoto").addEventListener("click", () => {
-        nextChallenge();
+        const placeInput = document.getElementById("placeInput");
+        const yearInput = document.getElementById("yearInput");
+        const userPlace = placeInput.value.trim().toLowerCase();
+        const userYear = yearInput.value.trim();
+        
+        if (challenge.validAnswers) {
+            const placeCorrect = challenge.validAnswers.place.some(answer => 
+                userPlace === answer.toLowerCase()
+            );
+            const yearCorrect = challenge.validAnswers.year.some(answer => 
+                userYear === answer
+            );
+            
+            if (placeCorrect && yearCorrect) {
+                placeInput.style.borderColor = "var(--gold)";
+                yearInput.style.borderColor = "var(--gold)";
+                setTimeout(() => nextChallenge(), 500);
+            } else {
+                if (!placeCorrect) {
+                    placeInput.style.borderColor = "#dc3545";
+                    placeInput.value = "";
+                    placeInput.placeholder = "Lugar incorrecto...";
+                }
+                if (!yearCorrect) {
+                    yearInput.style.borderColor = "#dc3545";
+                    yearInput.value = "";
+                    yearInput.placeholder = "Año incorrecto...";
+                }
+            }
+        } else {
+            nextChallenge();
+        }
     });
 }
 
@@ -414,7 +519,7 @@ function renderAudioChallenge(challenge, content) {
                 nextChallenge();
             });
         } else {
-            nextChallenge();
+            alert("Respuesta incorrecta. Intenta de nuevo...");
         }
     });
 }
@@ -445,7 +550,17 @@ function renderAnecdoteChallenge(challenge, content) {
     `;
 
     document.getElementById("submitAnecdote").addEventListener("click", () => {
-        nextChallenge();
+        const selected = document.querySelector('input[name="anecdoteAnswer"]:checked');
+        
+        if (challenge.correctAnswer !== undefined) {
+            if (selected && parseInt(selected.value) === challenge.correctAnswer) {
+                setTimeout(() => nextChallenge(), 500);
+            } else {
+                alert("Respuesta incorrecta. Intenta de nuevo...");
+            }
+        } else {
+            nextChallenge();
+        }
     });
 }
 
@@ -546,7 +661,20 @@ function renderDragChallenge(challenge, content) {
     });
 
     document.getElementById("checkOrder").addEventListener("click", () => {
-        nextChallenge();
+        const items = [...container.querySelectorAll(".drag-item")];
+        const years = items.map(item => parseInt(item.dataset.year));
+        const isCorrect = years.every((year, index) => index === 0 || year >= years[index - 1]);
+        
+        if (isCorrect) {
+            items.forEach(item => item.style.borderColor = "var(--gold)");
+            setTimeout(() => nextChallenge(), 500);
+        } else {
+            items.forEach(item => item.style.borderColor = "#dc3545");
+            setTimeout(() => {
+                items.forEach(item => item.style.borderColor = "");
+            }, 1500);
+            alert("Orden incorrecto. Intenta de nuevo...");
+        }
     });
 }
 
@@ -690,15 +818,6 @@ function renderReactionChallenge(challenge, content) {
             feedback.innerHTML = `<span class="feedback-info">${correctCount} correctas, ${wrongCount} incorrectas</span>`;
         }
     });
-
-    // BOTÓN TEMPORAL PARA TEST - ELIMINAR DESPUÉS
-    const skipButton = document.createElement("button");
-    skipButton.className = "start-button";
-    skipButton.style.marginTop = "15px";
-    skipButton.style.opacity = "0.5";
-    skipButton.innerHTML = `<span>SALTAR (TEST)</span><span class="arrow">→</span>`;
-    skipButton.addEventListener("click", () => nextChallenge());
-    content.appendChild(skipButton);
 }
 
 // Avanzar al siguiente desafío

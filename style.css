@@ -487,6 +487,29 @@ h2 span {
     font-size: 11px;
     letter-spacing: 3px;
     color: var(--gold);
+    margin-bottom: 10px;
+}
+
+.skip-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+    transition: all 0.3s ease;
+}
+
+.skip-button:hover {
+    background: #c82333;
+    transform: scale(1.05);
 }
 
 .challenge-target {
