@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soluciones · Paco & Tania</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d6b878;
+            --gold-light: #f0d99a;
+            --cream: #f5efe3;
+            --dark: #090909;
+            --dark-soft: #121212;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--dark);
+            color: var(--cream);
+            font-family: "Montserrat", sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(32px, 6vw, 50px);
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: rgba(214, 184, 120, 0.6);
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .solution-card {
+            background: rgba(214, 184, 120, 0.05);
+            border: 1px solid rgba(214, 184, 120, 0.2);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .solution-number {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .solution-question {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 20px;
+            color: var(--cream);
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .solution-answer {
+            font-size: 16px;
+            color: var(--gold-light);
+            line-height: 1.6;
+            padding: 12px 15px;
+            background: rgba(214, 184, 120, 0.08);
+            border-left: 3px solid var(--gold);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .solution-answer .correct {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+
+        .movie-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .movie-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(214, 184, 120, 0.05);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .movie-list li .year {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .movie-list li .horror-badge {
+            font-size: 10px;
+            background: rgba(220, 53, 69, 0.2);
+            color: #e74c3c;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .movie-list li .original-badge {
+            font-size: 10px;
+            background: rgba(214, 184, 120, 0.15);
+            color: var(--gold);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        .target-badge {
+            display: inline-block;
+            font-size: 10px;
+            letter-spacing: 2px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .target-paco {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .target-tania {
+            background: rgba(155, 89, 182, 0.2);
+            color: #9b59b6;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+
+        .valid-answers {
+            margin-top: 10px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .valid-answers code {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin: 3px 3px;
+            font-size: 12px;
+            color: var(--gold-light);
+        }
+
+        .digit-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .digit-box {
+            width: 60px;
+            height: 80px;
+            background: rgba(214, 184, 120, 0.1);
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 36px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .reaction-correct {
+            color: #2ecc71;
+        }
+
+        .reaction-wrong {
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .movies-grid .movie-item {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .movies-grid .movie-item.correct {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+
+        .movies-grid .movie-item.wrong {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+            text-decoration: line-through;
+        }
+
+        .reveal-images {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .reveal-images img {
+            max-width: 45%;
+            border-radius: 8px;
+            border: 2px solid var(--gold);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 25px 15px;
+            }
+
+            .solution-card {
+                padding: 18px;
+            }
+
+            .solution-question {
+                font-size: 18px;
+            }
+
+            .solution-answer {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+
+            .movie-list li {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+
+            .movies-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Soluciones</h1>
+        <div class="subtitle">Solo para los organizadores</div>
+
+        <!-- Desafío 1 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 1</div>
+            <span class="target-badge target-paco">Pregunta para Paco</span>
+            <div class="solution-question">¿Cómo se llama el colegio donde estudió Tania?</div>
+            <div class="solution-answer">
+                <span class="correct">Academia San Gervasio</span> o simplemente <span class="correct">San Gervasio</span>
+            </div>
+            <div class="valid-answers">
+                Respuestas válidas: <code>academia san gervasio</code> <code>san gervasio</code>
+            </div>
+        </div>
+
+        <!-- Desafío 2 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 2</div>
+            <div class="solution-question">Ordena estas películas por año de estreno (de más antigua a más reciente)</div>
+            <div class="solution-answer">
+                <ul class="movie-list">
+                    <li><span>Psicosis</span> <span class="horror-badge">TERROR</span> <span class="year">1960</span></li>
+                    <li><span>El Padrino</span> <span class="original-badge">ORIGINAL</span> <span class="year">1972</span></li>
+                    <li><span>El Exorcista</span> <span class="horror-badge">TERROR</span> <span class="year">1973</span></li>
+                    <li><span>Star Wars</span> <span class="original-badge">ORIGINAL</span> <span class="year">1977</span></li>
+                    <li><span>Alien</span> <span class="horror-badge">TERROR</span> <span class="year">1979</span></li>
+                    <li><span>E.T.</span> <span class="original-badge">ORIGINAL</span> <span class="year">1982</span></li>
+                    <li><span>Pesadilla en Elm Street</span> <span class="horror-badge">TERROR</span> <span class="year">1984</span></li>
+                    <li><span>Pulp Fiction</span> <span class="original-badge">ORIGINAL</span> <span class="year">1994</span></li>
+                    <li><span>Titanic</span> <span class="original-badge">ORIGINAL</span> <span class="year">1997</span></li>
+                    <li><span>Saw</span> <span class="horror-badge">TERROR</span> <span class="year">2004</span></li>
+                    <li><span>Get Out</span> <span class="horror-badge">TERROR</span> <span class="year">2017</span></li>
+                    <li><span>Hereditary</span> <span class="horror-badge">TERROR</span> <span class="year">2018</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Desafío 3 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 3</div>
+            <span class="target-badge target-tania">Pregunta para Tania</span>
+            <div class="solution-question">¿Dónde y cuándo se tomó esta foto?</div>
+            <div class="solution-answer">
+                Lugar: <span class="correct">Begur</span><br>
+                Año: <span class="correct">2006</span>
+            </div>
+            <div class="valid-answers">
+                Lugar válido: <code>begur</code><br>
+                Año válido: <code>2006</code>
+            </div>
+        </div>
+
+        <!-- Desafío 4 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 4</div>
+            <div class="solution-question">Encuentra las 8 parejas de familiares (Memory)</div>
+            <div class="solution-answer">
+                Las parejas son las fotos: <code>01.png</code> <code>02.png</code> <code>03.png</code> <code>04.png</code> <code>05.png</code> <code>06.png</code> <code>07.png</code> <code>08.png</code><br>
+                <br>
+                Tiempo límite: <span class="correct">35 segundos</span>
+            </div>
+        </div>
+
+        <!-- Desafío 5 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 5</div>
+            <div class="solution-question">¿Qué canción estábamos bailando en este momento?</div>
+            <div class="solution-answer">
+                <span class="correct">Dubidubidu - Christell</span>
+            </div>
+            <div class="valid-answers">
+                Opciones: <code>Mi carro - Manolo Escobar</code> <code>La Macarena - Los del Río</code> <code>Así es la vida - Julio Iglesias</code> <code style="background: rgba(46,204,113,0.2);">Dubidubidu - Christell ✓</code>
+            </div>
+        </div>
+
+        <!-- Desafío 6 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 6</div>
+            <span class="target-badge target-tania">Pregunta para Tania</span>
+            <div class="solution-question">Pregunta seria: ¿Quién da más la chapa en la relación?</div>
+            <div class="solution-answer">
+                <span class="correct">Todas las anteriores son correctas</span> (cualquier respuesta vale)
+            </div>
+            <div class="valid-answers">
+                Acepta cualquier respuesta (acceptAny: true)
+            </div>
+        </div>
+
+        <!-- Desafío 7 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 7</div>
+            <span class="target-badge target-paco">Pregunta para Paco</span>
+            <div class="solution-question">¿Cuáles son los 8 apellidos de Tania en orden?</div>
+            <div class="solution-answer">
+                <span class="correct">Linares Máñez Escudero Sánchez Muñoz Pérez Fernández González</span>
+            </div>
+            <div class="valid-answers">
+                Respuestas válidas (con/sin acentos):<br>
+                <code>linares máñez escudero sánchez muñoz pérez fernández gonzález</code><br>
+                <code>linares maxez escudero sanchez munoz perez fernandez gonzalez</code><br>
+                (combinaciones de acentos también válidas)
+            </div>
+        </div>
+
+        <!-- Desafío 8 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 8</div>
+            <div class="solution-question">Haz clic SOLO en las películas de los años 90</div>
+            <div class="solution-answer">
+                <div class="movies-grid">
+                    <div class="movie-item correct">Titanic (1997) ✓</div>
+                    <div class="movie-item wrong">Avatar (2009) ✗</div>
+                    <div class="movie-item correct">Matrix (1999) ✓</div>
+                    <div class="movie-item wrong">Shrek (2001) ✗</div>
+                    <div class="movie-item correct">Pulp Fiction (1994) ✓</div>
+                    <div class="movie-item correct">Forrest Gump (1994) ✓</div>
+                    <div class="movie-item wrong">Frozen (2013) ✗</div>
+                    <div class="movie-item correct">El Rey León (1994) ✓</div>
+                    <div class="movie-item correct">Terminator 2 (1991) ✓</div>
+                    <div class="movie-item correct">Jurassic Park (1993) ✓</div>
+                    <div class="movie-item wrong">Batman (1989) ✗</div>
+                    <div class="movie-item correct">Toy Story (1995) ✓</div>
+                    <div class="movie-item wrong">Gladiator (2000) ✗</div>
+                    <div class="movie-item wrong">Harry Potter (2001) ✗</div>
+                    <div class="movie-item wrong">El Señor de los Anillos (2001) ✗</div>
+                    <div class="movie-item correct">Braveheart (1995) ✓</div>
+                    <div class="movie-item wrong">Inception (2010) ✗</div>
+                    <div class="movie-item wrong">Batman Begins (2005) ✗</div>
+                    <div class="movie-item correct">Toy Story 2 (1999) ✓</div>
+                    <div class="movie-item wrong">X-Men (2000) ✗</div>
+                </div>
+                <br>
+                Objetivo: <span class="correct">10 correctas</span> sin ninguna incorrecta
+            </div>
+        </div>
+
+        <!-- Desafío 9 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 9</div>
+            <span class="target-badge target-paco">Pregunta para Paco</span>
+            <div class="solution-question">Cuando Fran empezó a salir con Davinia, Tania tenía 2 años y medio. ¿Qué pasó cuando Fran trajo a Davinia a casa a presentársela?</div>
+            <div class="solution-answer">
+                <span class="correct">Tania no le hablaba ni le miraba a la cara. Davinia había venido a quitarle al "Tete Fran"... y eso a Tania no le gustó nada. Así estuvo casi un año sin querer saber nada de ella, cuando la veía se ponía seria y se iba enfadada.</span>
+            </div>
+            <div class="valid-answers">
+                Opción B (índice 1)
+            </div>
+        </div>
+
+        <!-- Desafío 10 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 10</div>
+            <div class="solution-question">Cada mañana, Fran se hace esta pregunta al despertarse... Si un ciempiés tiene cien patas, ¿cuántos ojos tiene un piojo?</div>
+            <div class="solution-answer">
+                <span class="correct">π (3.14159...)</span>
+            </div>
+            <div class="valid-answers">
+                Respuestas válidas: <code>3.14</code> <code>3,14</code> <code>3.1416</code> <code>3,1416</code> <code>3.14159</code> <code>3,14159</code> <code>3.14159265</code> <code>3,14159265</code> <code>pi</code> <code>π</code>
+            </div>
+        </div>
+
+        <!-- Desafío 11 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 11</div>
+            <div class="solution-question">¿Qué debe hacer Paco? (Historia de la media maratón)</div>
+            <div class="solution-answer">
+                <span class="correct">D) Todas las anteriores.</span>
+            </div>
+        </div>
+
+        <!-- Desafío 12 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 12</div>
+            <div class="solution-question">¿Quién es el mejor imitador de Mickey Mouse?</div>
+            <div class="solution-answer">
+                <span class="correct">Paco</span>
+            </div>
+            <div class="valid-answers">
+                Imágenes: <code>pacomickey.png</code> + <code>fotoasombro.png</code>
+            </div>
+        </div>
+
+        <!-- DÍGITOS FINALES -->
+        <div class="solution-card" style="border-color: var(--gold);">
+            <div class="solution-number">Código Final</div>
+            <div class="solution-question">Los 3 dígitos de la caja fuerte</div>
+            <div class="digit-display">
+                <div class="digit-box">0</div>
+                <div class="digit-box">5</div>
+                <div class="digit-box">1</div>
+            </div>
+            <div class="solution-answer" style="text-align: center;">
+                Código: <span class="correct" style="font-size: 24px; font-weight: bold;">0 - 5 - 1</span><br>
+                <br>
+                (5€ que os regalamos para la boda... no os emocionéis mucho!!)
+            </div>
+        </div>
+    </div>
+</body>
+</html>

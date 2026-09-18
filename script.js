@@ -1,6 +1,5 @@
 const startButton = document.getElementById("startButton");
 const startMissionButton = document.getElementById("startMissionButton");
-const skipToEndButton = document.getElementById("skipToEndButton"); // TEMPORAL
 const openLockButton = document.getElementById("openLockButton");
 const restartButton = document.getElementById("restartButton");
 const skipChallengeButton = document.getElementById("skipChallengeButton"); // TEMPORAL - MODO DESARROLLO
@@ -12,6 +11,7 @@ const digitsScreen = document.getElementById("digitsScreen");
 const lockScreen = document.getElementById("lockScreen");
 
 let currentChallengeIndex = 0;
+let memoryTimer = null;
 
 // Definición de los 10 desafíos
 const challenges = [
@@ -26,11 +26,18 @@ const challenges = [
         type: "drag",
         question: "Ordena estas películas por año de estreno (de más antigua a más reciente)",
         items: [
+            { text: "Psicosis", year: 1960 },
             { text: "El Padrino", year: 1972 },
+            { text: "El Exorcista", year: 1973 },
             { text: "Star Wars", year: 1977 },
+            { text: "Alien", year: 1979 },
             { text: "E.T.", year: 1982 },
+            { text: "Pesadilla en Elm Street", year: 1984 },
             { text: "Pulp Fiction", year: 1994 },
-            { text: "Titanic", year: 1997 }
+            { text: "Titanic", year: 1997 },
+            { text: "Saw", year: 2004 },
+            { text: "Get Out", year: 2017 },
+            { text: "Hereditary", year: 2018 }
         ]
     },
     {
@@ -48,7 +55,7 @@ const challenges = [
         type: "memory",
         question: "Encuentra las 8 parejas de familiares",
         pairs: ["images/01.png", "images/02.png", "images/03.png", "images/04.png", "images/05.png", "images/06.png", "images/07.png", "images/08.png"],
-        timeLimit: 35
+        timeLimit: 25
     },
     {
         type: "audio",
@@ -62,7 +69,7 @@ const challenges = [
         ],
         correctAnswer: 3,
         videoUrl: "https://www.youtube.com/embed/K3V0XvCE4ak",
-        hint: "Pista: Escucha bien... es una canción infantil que nos sabíamos de memoria"
+        hint: "Pista: Aquí no hay pista... Solo resaltar que el baile no es lo nuestro. :P"
     },
     {
         type: "radio",
@@ -75,7 +82,7 @@ const challenges = [
         ],
         correctAnswer: 2,
         acceptAny: true,
-        hint: "Pista: Si estás leyendo esto, probablemente ya sabes la respuesta..."
+        hint: "Pista: No hace falta pensarlo mucho. Solo recordad la última vez que Paco empezó a hablar de algo que le gusta."
     },
     {
         type: "text",
@@ -103,7 +110,7 @@ const challenges = [
             { name: "El Rey León", year: 1994, correct: true },
             { name: "Terminator 2", year: 1991, correct: true },
             { name: "Jurassic Park", year: 1993, correct: true },
-            { name: "El Silencio de los Corderos", year: 1991, correct: true },
+            { name: "Batman", year: 1989, correct: false },
             { name: "Toy Story", year: 1995, correct: true },
             { name: "Gladiator", year: 2000, correct: false },
             { name: "Harry Potter", year: 2001, correct: false },
@@ -111,8 +118,8 @@ const challenges = [
             { name: "Braveheart", year: 1995, correct: true },
             { name: "Inception", year: 2010, correct: false },
             { name: "Batman Begins", year: 2005, correct: false },
-            { name: "Salvar al Soldado Ryan", year: 1998, correct: true },
-            { name: "American Beauty", year: 1999, correct: true }
+            { name: "Toy Story 2", year: 1999, correct: true },
+            { name: "X-Men", year: 2000, correct: false }
         ],
         targetScore: 10
     },
@@ -156,6 +163,11 @@ const challenges = [
 
 // Navegación entre pantallas
 function showScreen(screen) {
+    if (memoryTimer) {
+        clearInterval(memoryTimer);
+        memoryTimer = null;
+    }
+    
     const screens = [landing, mission, challengeContainer, digitsScreen, lockScreen];
     
     screens.forEach(s => {
@@ -181,11 +193,6 @@ startMissionButton.addEventListener("click", () => {
     loadChallenge(0);
 });
 
-// BOTÓN TEMPORAL PARA TEST - ELIMINAR DESPUÉS
-skipToEndButton.addEventListener("click", () => {
-    showScreen(lockScreen);
-});
-
 openLockButton.addEventListener("click", () => {
     showScreen(lockScreen);
 });
@@ -201,6 +208,11 @@ skipChallengeButton.addEventListener("click", () => {
 
 // Cargar desafío
 function loadChallenge(index) {
+    if (memoryTimer) {
+        clearInterval(memoryTimer);
+        memoryTimer = null;
+    }
+    
     const challenge = challenges[index];
     const content = document.getElementById("challengeContent");
     const progressFill = document.getElementById("progressFill");
@@ -570,7 +582,7 @@ function renderDragChallenge(challenge, content) {
     
     content.innerHTML = `
         <div class="challenge-question">${challenge.question}</div>
-        <div class="drag-hint">Arrastra para ordenar o usa las flechas</div>
+        <div class="drag-hint">Arrastra para ordenar</div>
         <div class="drag-container" id="dragContainer"></div>
         <button class="start-button" id="checkOrder">
             <span>CONTINUAR</span>
@@ -683,7 +695,6 @@ function renderMemoryChallenge(challenge, content) {
     let timeLeft = challenge.timeLimit || 30;
     let matchedPairs = 0;
     let flippedCards = [];
-    let timer;
     
     function initGame() {
         const pairs = [...challenge.pairs, ...challenge.pairs];
@@ -725,7 +736,10 @@ function renderMemoryChallenge(challenge, content) {
                         flippedCards = [];
                         
                         if (matchedPairs === challenge.pairs.length) {
-                            clearInterval(timer);
+                            if (memoryTimer) {
+                                clearInterval(memoryTimer);
+                                memoryTimer = null;
+                            }
                             setTimeout(() => nextChallenge(), 1000);
                         }
                     } else {
@@ -740,11 +754,14 @@ function renderMemoryChallenge(challenge, content) {
         });
 
         document.getElementById("skipMemory").addEventListener("click", () => {
-            clearInterval(timer);
+            if (memoryTimer) {
+                clearInterval(memoryTimer);
+                memoryTimer = null;
+            }
             nextChallenge();
         });
 
-        timer = setInterval(() => {
+        memoryTimer = setInterval(() => {
             timeLeft--;
             const display = document.getElementById("memoryTimeDisplay");
             if (display) {
@@ -752,7 +769,7 @@ function renderMemoryChallenge(challenge, content) {
             }
             
             if (timeLeft <= 0) {
-                clearInterval(timer);
+                clearInterval(memoryTimer);
                 timeLeft = challenge.timeLimit || 30;
                 initGame();
             }

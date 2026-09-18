@@ -383,11 +383,11 @@ h2 span {
 .mission p {
     color: #bbb;
 
-    font-size: 14px;
+    font-size: 17px;
 
     line-height: 1.8;
 
-    max-width: 450px;
+    max-width: 500px;
 
     margin: auto;
 }
@@ -1231,8 +1231,8 @@ h2 span {
     }
 
     .mission p {
-        font-size: 13px;
-        line-height: 1.6;
+        font-size: 16px;
+        line-height: 1.7;
     }
 
     /* Challenge Container */
