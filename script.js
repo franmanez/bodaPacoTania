@@ -49,7 +49,7 @@ const challenges = [
             place: ["begur"],
             year: ["2006"]
         },
-        hint: "Pista: Un sitio al que íbamos mucho cuando éramos jóvenes y guapos (ahora solo somos guapos)... ¡hace siglos! Aunque en esa época Paco ya no era tan joven xD"
+        hint: "Pista: Ibamos mucho y eramos jovenes (nosotros... Paco ya tenia una edad) 😛"
     },
     {
         type: "memory",
@@ -62,14 +62,14 @@ const challenges = [
         question: "¿Qué canción estábamos bailando en este momento?",
         image: "images/pacofran.gif",
         options: [
-            "Mi carro - Manolo Escobar",
+            "Soy una taza - Cantajuegos",
             "La Macarena - Los del Río",
-            "Así es la vida - Julio Iglesias",
+            "Chuchuwa - Cachureos",
             "Dubidubidu - Christell"
         ],
         correctAnswer: 3,
         videoUrl: "https://www.youtube.com/embed/K3V0XvCE4ak",
-        hint: "Pista: Aquí no hay pista... Solo resaltar que el baile no es lo nuestro. :P"
+        hint: "Pista: Aquí no hay pista... Solo resaltar que el baile no es lo nuestro. 💃"
     },
     {
         type: "radio",
@@ -89,11 +89,9 @@ const challenges = [
         target: "paco",
         question: "¿Cuáles son los 8 apellidos de Tania en orden?",
         validAnswers: [
-            "linares máñez escudero sánchez muñoz pérez fernández gonzález",
-            "linares maxez escudero sanchez munoz perez fernandez gonzalez",
-            "linares máñez escudero sánchez munoz perez fernandez gonzalez",
-            "linares maxez escudero sanchez muñoz pérez fernández gonzález"
+            "linares manez escudero sanchez munoz perez fernandez gonzalez"
         ],
+        normalizeInput: true,
         hint: "Orden:\n1) Primer apellido del padre\n2) Primer apellido de la madre\n3) Segundo apellido del padre\n4) Segundo apellido de la madre\n5) Segundo apellido del abuelo paterno\n6) Segundo apellido del abuelo materno\n7) Segundo apellido de la abuela paterna\n8) Segundo apellido de la abuela materna"
     },
     {
@@ -128,8 +126,8 @@ const challenges = [
         target: "paco",
         question: "Cuando Fran empezó a salir con Davinia, Tania tenía 2 años y medio. ¿Qué pasó cuando Fran trajo a Davinia a casa a presentársela?",
         options: [
-            "Tania y Davinia se hicieron mejores amigas desde el primer día. Tania estaba encantada de tener una nueva amiga con la que jugar.",
-            "Tania no le hablaba ni le miraba a la cara. Davinia había venido a quitarle al 'Tete Fran'... y eso a Tania no le gustó nada. Así estuvo casi un año sin querer saber nada de ella, cuando la veía se ponía seria y se iba enfadada."
+            "Tania y Davinia se hicieron muy buenas amigas. Jugaban juntas y Tania estaba siempre deseando que Davinia viniera a casa de la yaya Maria. Estaba encantada con su nueva amiga y no podía estar más feliz de tenerla cerca.",
+            "Tania no quería ni hablarle ni mirarla a la cara. Para ella, Davinia había venido con una misión muy clara: ¡quitarle al 'Tete Fran'! Y eso no le hizo ninguna gracia.\n\nDurante casi un año decidió que Davinia no existía. Cuando la veía, se ponía seria, giraba la cara y se marchaba enfadada. ¡Davinia no lo tuvo nada fácil!"
         ],
         correctAnswer: 1
     },
@@ -157,7 +155,7 @@ const challenges = [
         options: ["Paco", "Tania"],
         images: ["images/pacomickey.png", "images/fotoasombro.png"],
         correctAnswer: 0,
-        explanation: "¡Estas son las caras de tu familia cuando imitas a Mickey Mouse... y cómo te ven en su mente ellas mientras lo haces!"
+        explanation: "Esta es la cara de vuestra familia cuando Paco se pone a imitar a Mickey Mouse."
     }
 ];
 
@@ -251,10 +249,14 @@ function renderTextChallenge(challenge, content) {
         ? `<div class="challenge-target">Pregunta para ${challenge.target === "paco" ? "Paco" : "Tania"}</div>` 
         : "";
 
+    const hintHTML = challenge.hint
+        ? `<div class="challenge-hint">${challenge.hint}</div>`
+        : "";
+
     content.innerHTML = `
         ${targetLabel}
         <div class="challenge-question">${challenge.question}</div>
-        <div class="challenge-hint">${challenge.hint}</div>
+        ${hintHTML}
         <input type="text" class="challenge-input" id="textInput" placeholder="Escribe tu respuesta...">
         <button class="start-button" id="submitAnswer">
             <span>CONTINUAR</span>
@@ -264,7 +266,11 @@ function renderTextChallenge(challenge, content) {
 
     document.getElementById("submitAnswer").addEventListener("click", () => {
         const input = document.getElementById("textInput");
-        const userAnswer = input.value.trim().toLowerCase();
+        let userAnswer = input.value.trim().toLowerCase();
+        
+        if (challenge.normalizeInput) {
+            userAnswer = userAnswer.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
         
         if (challenge.validAnswers && challenge.validAnswers.length > 0) {
             const isCorrect = challenge.validAnswers.some(answer => 
@@ -298,10 +304,14 @@ function renderRadioChallenge(challenge, content) {
         </label>
     `).join('');
 
+    const hintHTML = challenge.hint
+        ? `<div class="challenge-hint">${challenge.hint}</div>`
+        : "";
+
     content.innerHTML = `
         ${targetLabel}
         <div class="challenge-question">${challenge.question}</div>
-        <div class="challenge-hint">${challenge.hint}</div>
+        ${hintHTML}
         <div class="radio-container">
             ${optionsHTML}
         </div>
@@ -391,7 +401,6 @@ function renderRevealChallenge(challenge, content) {
                         <img src="${challenge.images[0]}" alt="Mickey Mouse" class="reveal-image">
                         <img src="${challenge.images[1]}" alt="Cara de asombro" class="reveal-image">
                     </div>
-                    <div class="reveal-explanation">${challenge.explanation}</div>
                     <button class="start-button" id="continueReveal">
                         <span>CONTINUAR</span>
                         <span class="arrow">→</span>
@@ -411,7 +420,6 @@ function renderRevealChallenge(challenge, content) {
                     <img src="${challenge.images[0]}" alt="Mickey Mouse" class="reveal-image">
                     <img src="${challenge.images[1]}" alt="Cara de asombro" class="reveal-image">
                 </div>
-                <div class="reveal-explanation">${challenge.explanation}</div>
                 <button class="start-button" id="continueReveal">
                     <span>CONTINUAR</span>
                     <span class="arrow">→</span>
@@ -431,13 +439,17 @@ function renderPhotoChallenge(challenge, content) {
         ? `<div class="challenge-target">Pregunta para ${challenge.target === "paco" ? "Paco" : "Tania"}</div>` 
         : "";
 
+    const hintHTML = challenge.hint
+        ? `<div class="challenge-hint">${challenge.hint}</div>`
+        : "";
+
     content.innerHTML = `
         ${targetLabel}
         <div class="challenge-question">${challenge.question}</div>
         <div class="photo-container">
             <img src="${challenge.image}" alt="Foto del recuerdo" class="challenge-photo">
         </div>
-        <div class="challenge-hint">${challenge.hint}</div>
+        ${hintHTML}
         <div class="photo-inputs">
             <div class="photo-input-group">
                 <label class="photo-label">¿Dónde?</label>
@@ -492,12 +504,16 @@ function renderPhotoChallenge(challenge, content) {
 
 // Desafío de audio con gif
 function renderAudioChallenge(challenge, content) {
+    const hintHTML = challenge.hint
+        ? `<div class="challenge-hint">${challenge.hint}</div>`
+        : "";
+
     content.innerHTML = `
         <div class="challenge-question">${challenge.question}</div>
         <div class="audio-gif-container">
             <img src="${challenge.image}" alt="Bailando" class="audio-gif">
         </div>
-        <div class="challenge-hint">${challenge.hint}</div>
+        ${hintHTML}
         <div class="radio-container">
             ${challenge.options.map((option, index) => `
                 <label class="radio-option">
