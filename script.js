@@ -85,6 +85,72 @@ const challenges = [
         hint: "Pista: No hace falta pensarlo mucho. Solo recordad la última vez que Paco empezó a hablar de algo que le gusta."
     },
     {
+        type: "soundtrack",
+        question: "¿De qué película es esta BSO?",
+        melodies: [
+            {
+                trackQuery: "Harry Potter Hedwig's Theme",
+                validAnswers: ["harry potter"],
+                distractors: ["Señor de los Anillos", "Piratas del Caribe", "Narnia"]
+            },
+            {
+                trackQuery: "Halloween John Carpenter",
+                validAnswers: ["halloween"],
+                distractors: ["Scream", "Saw", "Pesadilla en Elm Street"]
+            },
+            {
+                trackQuery: "The Godfather Nino Rota",
+                validAnswers: ["el padrino", "the godfather"],
+                distractors: ["El Bueno el Feo y el Malo", "Scarface", "Casino"]
+            },
+            {
+                trackQuery: "Inception Time Hans Zimmer",
+                validAnswers: ["inception", "origen"],
+                distractors: ["Interstellar", "Tenet", "The Dark Knight"]
+            },
+            {
+                trackQuery: "Exorcist theme Tubular Bells",
+                validAnswers: ["el exorcista", "exorcista", "the exorcist"],
+                distractors: ["Scream", "Psicosis", "Insidious"]
+            },
+            {
+                trackQuery: "Interstellar Main Theme",
+                validAnswers: ["interstellar"],
+                distractors: ["2001 Odisea", "Gravity", "The Martian"]
+            },
+            {
+                trackQuery: "Amelie Comptine Yann Tiersen",
+                validAnswers: ["amelie", "amelia"],
+                distractors: ["Cinema Paradiso", "La La Land", "El Secreto de sus Ojos"]
+            },
+            {
+                trackQuery: "The Ring theme",
+                validAnswers: ["el ring", "ring", "the ring", "aro"],
+                distractors: ["Scream", "The Grudge", "Insidious"]
+            },
+            {
+                trackQuery: "Chariots of Fire",
+                validAnswers: ["carros de fuego", "chariots of fire"],
+                distractors: ["Braveheart", "Gladiator", "El Violinista en el Tejado"]
+            },
+            {
+                trackQuery: "Psycho Bernard Herrmann",
+                validAnswers: ["psicosis", "psycho"],
+                distractors: ["Halloween", "El Resplandor", "Tiburón"]
+            },
+            {
+                trackQuery: "Schindlers List John Williams",
+                validAnswers: ["la lista de schindler", "schindler", "schindlers list"],
+                distractors: ["Saving Private Ryan", "La Vida es Bella", "El Pianista"]
+            },
+            {
+                trackQuery: "Life is Beautiful Nicola Piovani",
+                validAnswers: ["la vida es bella", "vida es bella", "life is beautiful"],
+                distractors: ["Cinema Paradiso", "Gladiator", "Amelie"]
+            }
+        ]
+    },
+    {
         type: "text",
         target: "paco",
         question: "¿Cuáles son los 8 apellidos de Tania en orden?",
@@ -240,6 +306,8 @@ function loadChallenge(index) {
         renderStoryChallenge(challenge, content);
     } else if (challenge.type === "reveal") {
         renderRevealChallenge(challenge, content);
+    } else if (challenge.type === "soundtrack") {
+        renderSoundtrackChallenge(challenge, content);
     }
 }
 
@@ -793,6 +861,250 @@ function renderMemoryChallenge(challenge, content) {
     }
 
     initGame();
+}
+
+// Desafío de BSO
+let soundtrackAudio = null;
+
+async function fetchTrackPreview(query) {
+    try {
+        console.log("iTunes search:", query);
+        const apiURL = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=1&media=music`;
+        console.log("Fetching:", apiURL);
+        const response = await fetch(apiURL);
+        console.log("iTunes response status:", response.status);
+        const data = await response.json();
+        console.log("iTunes results count:", data.resultCount);
+        if (data.resultCount > 0) {
+            const track = data.results[0];
+            console.log("Found track:", track.trackName, "by", track.artistName);
+            console.log("Preview URL:", track.previewUrl);
+            return {
+                name: track.trackName,
+                artist: track.artistName,
+                preview: track.previewUrl
+            };
+        }
+        console.log("No tracks found");
+    } catch(e) {
+        console.error("iTunes API error:", e);
+    }
+    return null;
+}
+
+function playTrackAudio(previewUrl) {
+    if (soundtrackAudio) {
+        soundtrackAudio.pause();
+        soundtrackAudio.currentTime = 0;
+    }
+    if (previewUrl) {
+        soundtrackAudio = new Audio(previewUrl);
+        soundtrackAudio.volume = 1;
+        soundtrackAudio.play().catch(e => console.error("Play error:", e));
+        updatePlayStopBtn(true);
+    }
+}
+
+function stopTrackAudio() {
+    if (soundtrackAudio) {
+        soundtrackAudio.pause();
+        soundtrackAudio.currentTime = 0;
+        updatePlayStopBtn(false);
+    }
+}
+
+function updatePlayStopBtn(isPlaying) {
+    const btn = document.getElementById("playStopBtn");
+    if (!btn) return;
+    if (isPlaying) {
+        btn.innerHTML = `<span class="play-icon">⏹</span><span>PARAR</span>`;
+        btn.classList.remove("playing");
+        btn.classList.add("stopped");
+    } else {
+        btn.innerHTML = `<span class="play-icon">▶</span><span>REPRODUCIR</span>`;
+        btn.classList.remove("stopped");
+        btn.classList.add("playing");
+    }
+}
+
+function renderSoundtrackChallenge(challenge, content) {
+    let currentMelodyIndex = 0;
+    let totalCorrect = 0;
+    const totalMelodies = challenge.melodies.length;
+    let showHintOptions = false;
+
+    function renderMelodyRound() {
+        const melody = challenge.melodies[currentMelodyIndex];
+        showHintOptions = false;
+        let previewUrl = null;
+
+        const inputAreaHTML = `
+            <input type="text" class="challenge-input" id="soundtrackInput" placeholder="Escribe el nombre de la película..." autocomplete="off">
+            <button class="hint-btn" id="hintBtn">PISTA</button>
+            <div class="radio-container hidden" id="radioOptions"></div>
+        `;
+
+        content.innerHTML = `
+            <div class="challenge-question">${challenge.question}</div>
+            <div class="soundtrack-info">
+                <div class="soundtrack-counter">Melodía <span id="melodyCurrent">${currentMelodyIndex + 1}</span> de ${totalMelodies}</div>
+            </div>
+            <div id="audioPlayerContainer">
+                <div class="audio-loading">Cargando BSO...</div>
+            </div>
+            <div id="answerArea">${inputAreaHTML}</div>
+            <button class="start-button" id="submitSoundtrack">
+                <span>RESPONDER</span>
+                <span class="arrow">→</span>
+            </button>
+            <div class="soundtrack-feedback" id="soundtrackFeedback"></div>
+        `;
+
+        fetchTrackPreview(melody.trackQuery).then((track) => {
+            const container = document.getElementById("audioPlayerContainer");
+            if (container && track && track.preview) {
+                previewUrl = track.preview;
+                container.innerHTML = `
+                    <div class="audio-controls-wrapper">
+                        <button class="play-stop-btn" id="playStopBtn">
+                            <span class="play-icon">▶</span>
+                            <span>REPRODUCIR</span>
+                        </button>
+                    </div>
+                `;
+
+                document.getElementById("playStopBtn").addEventListener("click", () => {
+                    if (soundtrackAudio && !soundtrackAudio.paused) {
+                        stopTrackAudio();
+                    } else {
+                        playTrackAudio(previewUrl);
+                    }
+                });
+
+                soundtrackAudio = new Audio(previewUrl);
+                soundtrackAudio.volume = 1;
+                soundtrackAudio.play().catch(e => console.error("Play error:", e));
+                updatePlayStopBtn(true);
+
+                soundtrackAudio.addEventListener("ended", () => {
+                    updatePlayStopBtn(false);
+                });
+            } else if (container) {
+                console.error("No track or preview found. Track:", track);
+                container.innerHTML = `
+                    <div class="audio-error">
+                        <p>No se encontró la BSO.</p>
+                        <button class="retry-btn" id="retryBtn">REINTENTAR</button>
+                    </div>
+                `;
+                document.getElementById("retryBtn").addEventListener("click", () => {
+                    renderMelodyRound();
+                });
+            }
+        }).catch((e) => {
+            console.error("Fetch error:", e);
+            const container = document.getElementById("audioPlayerContainer");
+            if (container) {
+                container.innerHTML = `
+                    <div class="audio-error">
+                        <p>Error: ${e.message}</p>
+                        <button class="retry-btn" id="retryBtn">REINTENTAR</button>
+                    </div>
+                `;
+                document.getElementById("retryBtn").addEventListener("click", () => {
+                    renderMelodyRound();
+                });
+            }
+        });
+
+        document.getElementById("hintBtn").addEventListener("click", () => {
+            showHintOptions = true;
+            const radioContainer = document.getElementById("radioOptions");
+            const input = document.getElementById("soundtrackInput");
+            const hintBtn = document.getElementById("hintBtn");
+
+            const allOptions = [...melody.distractors];
+            const correctAnswer = melody.validAnswers[0];
+            const capitalized = correctAnswer.charAt(0).toUpperCase() + correctAnswer.slice(1);
+            allOptions.push(capitalized);
+            allOptions.sort(() => Math.random() - 0.5);
+
+            radioContainer.innerHTML = allOptions.map((option, i) => `
+                <label class="radio-option">
+                    <input type="radio" name="soundtrackRadio" value="${option.toLowerCase()}">
+                    <span class="radio-label">${option}</span>
+                </label>
+            `).join('');
+
+            input.style.display = "none";
+            hintBtn.style.display = "none";
+            radioContainer.classList.remove("hidden");
+        });
+
+        document.getElementById("submitSoundtrack").addEventListener("click", () => {
+            let userAnswer = "";
+
+            if (showHintOptions) {
+                const selected = document.querySelector('input[name="soundtrackRadio"]:checked');
+                if (!selected) {
+                    alert("Selecciona una opción...");
+                    return;
+                }
+                userAnswer = selected.value;
+            } else {
+                userAnswer = document.getElementById("soundtrackInput").value.trim().toLowerCase();
+            }
+
+            userAnswer = userAnswer.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const isCorrect = melody.validAnswers.some(answer => {
+                const normalized = answer.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                return userAnswer === normalized;
+            });
+
+            const feedback = document.getElementById("soundtrackFeedback");
+            if (isCorrect) {
+                totalCorrect++;
+                if (!showHintOptions) {
+                    document.getElementById("soundtrackInput").style.borderColor = "var(--gold)";
+                }
+                stopTrackAudio();
+                feedback.innerHTML = `<span class="feedback-success">¡Correcto! 🎬</span>`;
+                setTimeout(() => {
+                    currentMelodyIndex++;
+                    if (currentMelodyIndex < totalMelodies) {
+                        renderMelodyRound();
+                    } else {
+                        content.innerHTML = `
+                            <div class="challenge-question">¡HAS SUPERADO LA PRUEBA!</div>
+                            <p style="text-align:center;color:#bbb;font-size:19px;line-height:1.6;margin-top:15px;">${totalCorrect} de ${totalMelodies} melodías acertadas. Impresionante oído cinematográfico.</p>
+                        `;
+                        setTimeout(() => nextChallenge(), 2500);
+                    }
+                }, 1200);
+            } else {
+                feedback.innerHTML = `<span class="feedback-info">Esa no es... 🎃</span>`;
+                if (!showHintOptions) {
+                    const input = document.getElementById("soundtrackInput");
+                    input.style.borderColor = "#dc3545";
+                    input.value = "";
+                    input.placeholder = "Esa no es... escucha de nuevo y vuelve a intentarlo.";
+                }
+                setTimeout(() => {
+                    const input = document.getElementById("soundtrackInput");
+                    if (input) input.style.borderColor = "";
+                    feedback.innerHTML = "";
+                }, 2000);
+            }
+        });
+
+        document.getElementById("soundtrackInput")?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                document.getElementById("submitSoundtrack").click();
+            }
+        });
+    }
+
+    renderMelodyRound();
 }
 
 // Desafío de reacción

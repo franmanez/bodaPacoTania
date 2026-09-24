@@ -986,6 +986,137 @@ h2 span {
 }
 
 /* =========================
+    SOUNDTRACK GAME
+ ========================= */
+
+.soundtrack-info {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.soundtrack-counter {
+    font-size: 16px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.audio-loading {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: pulse-text 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.audio-controls-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.play-stop-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 28px;
+    background: rgba(214, 184, 120, 0.15);
+    border: 1px solid var(--gold);
+    border-radius: 30px;
+    color: var(--gold);
+    font-family: "Montserrat", sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 160px;
+}
+
+.play-stop-btn:hover {
+    background: rgba(214, 184, 120, 0.3);
+    transform: scale(1.03);
+}
+
+.play-stop-btn.stopped {
+    background: rgba(214, 184, 120, 0.1);
+    border-color: rgba(214, 184, 120, 0.4);
+}
+
+.play-icon {
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(214, 184, 120, 0.12);
+}
+
+.audio-error {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+    font-size: 14px;
+}
+
+.retry-btn {
+    display: block;
+    margin: 12px auto 0;
+    padding: 10px 25px;
+    background: rgba(214, 184, 120, 0.15);
+    border: 1px solid var(--gold);
+    border-radius: 20px;
+    color: var(--gold);
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: rgba(214, 184, 120, 0.3);
+}
+
+#answerArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hint-btn {
+    margin-top: 12px;
+    padding: 8px 20px;
+    background: transparent;
+    border: 1px solid rgba(214, 184, 120, 0.3);
+    border-radius: 20px;
+    color: #999;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hint-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.soundtrack-feedback {
+    text-align: center;
+    margin-top: 15px;
+    min-height: 24px;
+}
+
+/* =========================
     REACTION GAME
  ========================= */
 
