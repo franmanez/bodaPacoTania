@@ -1,7 +1,7 @@
 const startButton = document.getElementById("startButton");
 const startMissionButton = document.getElementById("startMissionButton");
 const restartButton = document.getElementById("restartButton");
-const skipChallengeButton = document.getElementById("skipChallengeButton"); // TEMPORAL - MODO DESARROLLO
+const skipChallengeButton = document.getElementById("skipChallengeButton"); // solo en index-saltar.html (desarrollo)
 
 const landing = document.querySelector(".landing");
 const mission = document.getElementById("mission");
@@ -265,8 +265,8 @@ restartButton.addEventListener("click", () => {
     showScreen(landing);
 });
 
-// BOTÓN TEMPORAL PARA DESARROLLO - ELIMINAR EN PRODUCCIÓN
-skipChallengeButton.addEventListener("click", () => {
+// Botón SALTAR (solo existe en index-saltar.html, modo desarrollo)
+skipChallengeButton?.addEventListener("click", () => {
     nextChallenge();
 });
 
@@ -437,7 +437,16 @@ function renderStoryChallenge(challenge, content) {
     `;
 
     document.getElementById("submitStory").addEventListener("click", () => {
-        nextChallenge();
+        const selected = document.querySelector('input[name="storyAnswer"]:checked');
+        if (challenge.correctAnswer !== undefined) {
+            if (selected && parseInt(selected.value) === challenge.correctAnswer) {
+                nextChallenge();
+            } else {
+                alert("Respuesta incorrecta. Intenta de nuevo...");
+            }
+        } else {
+            nextChallenge();
+        }
     });
 }
 
@@ -961,10 +970,6 @@ function renderMemoryChallenge(challenge, content) {
             </div>
             <div class="memory-timer hidden" id="memoryTimerBar">Tiempo: <span id="memoryTimeDisplay">${timeLimit}</span>s</div>
             <div class="memory-grid disabled" id="memoryGrid"></div>
-            <button class="start-button" id="skipMemory" style="margin-top: 20px;">
-                <span>CONTINUAR</span>
-                <span class="arrow">→</span>
-            </button>
         `;
 
         const grid = document.getElementById("memoryGrid");
@@ -981,7 +986,6 @@ function renderMemoryChallenge(challenge, content) {
         });
 
         document.getElementById("startMemory").addEventListener("click", startGame);
-        document.getElementById("skipMemory").addEventListener("click", skipGame);
     }
 
     function onCardClick(card) {
@@ -1036,14 +1040,6 @@ function renderMemoryChallenge(challenge, content) {
                 renderIntro("⏰ ¡Se acabó el tiempo! Inténtalo de nuevo.");
             }
         }, 1000);
-    }
-
-    function skipGame() {
-        if (memoryTimer) {
-            clearInterval(memoryTimer);
-            memoryTimer = null;
-        }
-        nextChallenge();
     }
 
     renderIntro();
