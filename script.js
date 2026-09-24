@@ -1,13 +1,11 @@
 const startButton = document.getElementById("startButton");
 const startMissionButton = document.getElementById("startMissionButton");
-const openLockButton = document.getElementById("openLockButton");
 const restartButton = document.getElementById("restartButton");
 const skipChallengeButton = document.getElementById("skipChallengeButton"); // TEMPORAL - MODO DESARROLLO
 
 const landing = document.querySelector(".landing");
 const mission = document.getElementById("mission");
 const challengeContainer = document.getElementById("challengeContainer");
-const digitsScreen = document.getElementById("digitsScreen");
 const lockScreen = document.getElementById("lockScreen");
 
 let currentChallengeIndex = 0;
@@ -105,7 +103,7 @@ const challenges = [
             },
             {
                 trackQuery: "Inception Time Hans Zimmer",
-                validAnswers: ["inception", "origen"],
+                validAnswers: ["origen", "inception"],
                 distractors: ["Interstellar", "Tenet", "The Dark Knight"]
             },
             {
@@ -125,7 +123,7 @@ const challenges = [
             },
             {
                 trackQuery: "The Ring theme",
-                validAnswers: ["el ring", "ring", "the ring", "aro"],
+                validAnswers: ["the ring", "ring", "el ring", "aro"],
                 distractors: ["Scream", "The Grudge", "Insidious"]
             },
             {
@@ -144,9 +142,9 @@ const challenges = [
                 distractors: ["Saving Private Ryan", "La Vida es Bella", "El Pianista"]
             },
             {
-                trackQuery: "Life is Beautiful Nicola Piovani",
-                validAnswers: ["la vida es bella", "vida es bella", "life is beautiful"],
-                distractors: ["Cinema Paradiso", "Gladiator", "Amelie"]
+                trackQuery: "Jurassic Park Theme John Williams",
+                validAnswers: ["jurassic park", "parque jurasico", "jurassic"],
+                distractors: ["Star Wars", "Tiburón", "Superman"]
             }
         ]
     },
@@ -238,7 +236,7 @@ function showScreen(screen) {
     }
     stopTrackAudio();
 
-    const screens = [landing, mission, challengeContainer, digitsScreen, lockScreen];
+    const screens = [landing, mission, challengeContainer, lockScreen];
     
     screens.forEach(s => {
         if (s !== screen) {
@@ -261,10 +259,6 @@ startMissionButton.addEventListener("click", () => {
     currentChallengeIndex = 0;
     showScreen(challengeContainer);
     loadChallenge(0);
-});
-
-openLockButton.addEventListener("click", () => {
-    showScreen(lockScreen);
 });
 
 restartButton.addEventListener("click", () => {
@@ -529,8 +523,8 @@ function renderHanoiChallenge(challenge, content) {
         ${hintHTML}
         <div class="hanoi-info">
             <span class="hanoi-moves" id="hanoiMoves">Movimientos: 0</span>
-            <span class="hanoi-min">Mínimo: ${Math.pow(2, discCount) - 1}</span>
         </div>
+        <div class="hanoi-note">El problema se puede resolver en ${Math.pow(2, discCount) - 1} movimientos… pero viendo vuestras capacidades, os concedo movimientos infinitos.</div>
         <div class="hanoi-board" id="hanoiBoard">
             ${["A", "B", "C"].map(t => `
                 <div class="hanoi-tower" data-tower="${t}">
@@ -933,18 +927,40 @@ function renderDragChallenge(challenge, content) {
 
 // Desafío de memoria
 function renderMemoryChallenge(challenge, content) {
-    let timeLeft = challenge.timeLimit || 30;
+    const timeLimit = challenge.timeLimit || 30;
+    let timeLeft = timeLimit;
     let matchedPairs = 0;
     let flippedCards = [];
-    
-    function initGame() {
+    let gameStarted = false;
+
+    function shuffleCards() {
         const pairs = [...challenge.pairs, ...challenge.pairs];
-        const shuffled = pairs.sort(() => Math.random() - 0.5);
-        
+        return pairs.sort(() => Math.random() - 0.5);
+    }
+
+    function renderIntro(message) {
+        gameStarted = false;
+        if (memoryTimer) {
+            clearInterval(memoryTimer);
+            memoryTimer = null;
+        }
+        timeLeft = timeLimit;
+
+        const msgHTML = message
+            ? `<div class="memory-intro-message">${message}</div>`
+            : `<div class="memory-intro-text">Encuentra las ${challenge.pairs.length} parejas. Dispones de <strong>${timeLimit} segundos</strong> para lograrlo.<br>Pulsa EMPEZAR para activar los cuadros.</div>`;
+
         content.innerHTML = `
             <div class="challenge-question">${challenge.question}</div>
-            <div class="memory-timer">Tiempo: <span id="memoryTimeDisplay">${timeLeft}</span>s</div>
-            <div class="memory-grid" id="memoryGrid"></div>
+            <div class="memory-intro" id="memoryIntro">
+                ${msgHTML}
+                <button class="start-button" id="startMemory">
+                    <span>EMPEZAR</span>
+                    <span class="arrow">→</span>
+                </button>
+            </div>
+            <div class="memory-timer hidden" id="memoryTimerBar">Tiempo: <span id="memoryTimeDisplay">${timeLimit}</span>s</div>
+            <div class="memory-grid disabled" id="memoryGrid"></div>
             <button class="start-button" id="skipMemory" style="margin-top: 20px;">
                 <span>CONTINUAR</span>
                 <span class="arrow">→</span>
@@ -955,52 +971,57 @@ function renderMemoryChallenge(challenge, content) {
         flippedCards = [];
         matchedPairs = 0;
 
-        shuffled.forEach((pair, index) => {
+        shuffleCards().forEach((pair) => {
             const card = document.createElement("div");
             card.className = "memory-card";
             card.dataset.value = pair;
             card.innerHTML = `<div class="card-inner"><div class="card-front">?</div><div class="card-back"><img src="${pair}" alt="Familiar"></div></div>`;
+            card.addEventListener("click", () => onCardClick(card));
             grid.appendChild(card);
+        });
 
-            card.addEventListener("click", () => {
-                if (card.classList.contains("flipped") || flippedCards.length === 2) return;
+        document.getElementById("startMemory").addEventListener("click", startGame);
+        document.getElementById("skipMemory").addEventListener("click", skipGame);
+    }
 
-                card.classList.add("flipped");
-                flippedCards.push(card);
+    function onCardClick(card) {
+        if (!gameStarted) return;
+        if (card.classList.contains("flipped") || flippedCards.length === 2) return;
 
-                if (flippedCards.length === 2) {
-                    const [card1, card2] = flippedCards;
-                    if (card1.dataset.value === card2.dataset.value) {
-                        card1.classList.add("matched");
-                        card2.classList.add("matched");
-                        matchedPairs++;
-                        flippedCards = [];
-                        
-                        if (matchedPairs === challenge.pairs.length) {
-                            if (memoryTimer) {
-                                clearInterval(memoryTimer);
-                                memoryTimer = null;
-                            }
-                            setTimeout(() => nextChallenge(), 1000);
-                        }
-                    } else {
-                        setTimeout(() => {
-                            card1.classList.remove("flipped");
-                            card2.classList.remove("flipped");
-                            flippedCards = [];
-                        }, 600);
+        card.classList.add("flipped");
+        flippedCards.push(card);
+
+        if (flippedCards.length === 2) {
+            const [card1, card2] = flippedCards;
+            if (card1.dataset.value === card2.dataset.value) {
+                card1.classList.add("matched");
+                card2.classList.add("matched");
+                matchedPairs++;
+                flippedCards = [];
+
+                if (matchedPairs === challenge.pairs.length) {
+                    if (memoryTimer) {
+                        clearInterval(memoryTimer);
+                        memoryTimer = null;
                     }
+                    gameStarted = false;
+                    setTimeout(() => nextChallenge(), 1000);
                 }
-            });
-        });
-
-        document.getElementById("skipMemory").addEventListener("click", () => {
-            if (memoryTimer) {
-                clearInterval(memoryTimer);
-                memoryTimer = null;
+            } else {
+                setTimeout(() => {
+                    card1.classList.remove("flipped");
+                    card2.classList.remove("flipped");
+                    flippedCards = [];
+                }, 600);
             }
-            nextChallenge();
-        });
+        }
+    }
+
+    function startGame() {
+        gameStarted = true;
+        document.getElementById("memoryIntro").classList.add("hidden");
+        document.getElementById("memoryTimerBar").classList.remove("hidden");
+        document.getElementById("memoryGrid").classList.remove("disabled");
 
         memoryTimer = setInterval(() => {
             timeLeft--;
@@ -1008,16 +1029,24 @@ function renderMemoryChallenge(challenge, content) {
             if (display) {
                 display.textContent = timeLeft;
             }
-            
+
             if (timeLeft <= 0) {
                 clearInterval(memoryTimer);
-                timeLeft = challenge.timeLimit || 30;
-                initGame();
+                memoryTimer = null;
+                renderIntro("⏰ ¡Se acabó el tiempo! Inténtalo de nuevo.");
             }
         }, 1000);
     }
 
-    initGame();
+    function skipGame() {
+        if (memoryTimer) {
+            clearInterval(memoryTimer);
+            memoryTimer = null;
+        }
+        nextChallenge();
+    }
+
+    renderIntro();
 }
 
 // Desafío de BSO
@@ -1322,7 +1351,7 @@ function nextChallenge() {
     if (currentChallengeIndex < challenges.length) {
         loadChallenge(currentChallengeIndex);
     } else {
-        showScreen(digitsScreen);
+        showScreen(lockScreen);
     }
 }
 

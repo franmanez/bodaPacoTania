@@ -147,45 +147,15 @@
         </div>
     </section>
 
-    <!-- Pantalla de dígitos obtenidos -->
-    <section id="digitsScreen" class="digits-screen hidden">
-        <div class="digits-content">
-            <div class="mission-number">
-                ¡MISIÓN COMPLETADA!
-            </div>
-            <h2>
-                ¡Tenéis los tres dígitos!<br>
-                Pero... ¿están en el orden correcto?
-            </h2>
-            <div class="digits-display">
-                <div class="digit-box">0</div>
-                <div class="digit-box">5</div>
-                <div class="digit-box">1</div>
-            </div>
-            <p class="hint-text">
-                Pista: Es la cantidad de dinero que os hemos regalado para la boda.<br>
-                Consejo: No lo gastéis en Amazon... los repartidores de esa zona no son de fiar y quién sabe si el paquete llegaría...
-            </p>
-            <button id="openLockButton" class="start-button">
-                <span>ABRIR EL LIBRO</span>
-                <span class="arrow">→</span>
-            </button>
-        </div>
-    </section>
-
-    <!-- Pantalla de instrucciones del candado físico -->
+    <!-- Pantalla final: felicidades + dígitos -->
     <section id="lockScreen" class="lock-screen hidden">
         <div class="lock-content">
             <div class="mission-number">
                 ¡ENHORABUENA!
             </div>
             <h2>
-                Habéis abierto<br>
-                el libro
+                Muchas <span>felicidades</span>
             </h2>
-            <div class="lock-image-container">
-                <img src="images/libro.jpg" alt="Libro caja fuerte" class="lock-image">
-            </div>
             <div class="gift-message">
                 <p>
                     ¡Felicidades, Paco y Tania!<br><br>
@@ -193,7 +163,30 @@
                     Gracias por hacernos partícipes de un día tan importante para vosotros. Fue una gran alegría poder acompañaros y compartir con vosotros un día tan especial, rodeados de la familia y de las personas que más queréis.<br><br>
                     ¡Os queremos!
                 </p>
+                <p class="gift-signature">
+                    Fran - Davinia - Ainet - Aran
+                </p>
             </div>
+
+            <div class="final-digits">
+                <div class="mission-number">
+                    ¡MISIÓN COMPLETADA!
+                </div>
+                <h2>
+                    ¡Tenéis los tres dígitos!<br>
+                    Pero... ¿están en el orden correcto?
+                </h2>
+                <div class="digits-display">
+                    <div class="digit-box">0</div>
+                    <div class="digit-box">5</div>
+                    <div class="digit-box">1</div>
+                </div>
+                <p class="hint-text">
+                    Pista: Es la cantidad de dinero que os hemos regalado para la boda.<br>
+                    Consejo: No lo gastéis en Amazon... los repartidores de esa zona no son de fiar y quién sabe si el paquete llegaría...
+                </p>
+            </div>
+
             <button id="restartButton" class="start-button">
                 <span>VOLVER AL INICIO</span>
                 <span class="arrow">→</span>
