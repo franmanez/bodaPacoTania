@@ -198,6 +198,11 @@ const challenges = [
         correctAnswer: 1
     },
     {
+        type: "hanoi",
+        question: "Torres de Hanói: Mueve todos los discos de la torre A a la torre C. Reglas: solo puedes mover un disco a la vez y nunca colocar un disco grande encima de uno más pequeño.",
+        discCount: 4
+    },
+    {
         type: "text",
         question: "Cada mañana, Fran se hace esta pregunta al despertarse... Si un ciempiés tiene cien patas, ¿cuántos ojos tiene un piojo?",
         validAnswers: ["3.14", "3,14", "3.1416", "3,1416", "3.14159", "3,14159", "3.14159265", "3,14159265", "pi", "π"]
@@ -231,7 +236,8 @@ function showScreen(screen) {
         clearInterval(memoryTimer);
         memoryTimer = null;
     }
-    
+    stopTrackAudio();
+
     const screens = [landing, mission, challengeContainer, digitsScreen, lockScreen];
     
     screens.forEach(s => {
@@ -276,7 +282,8 @@ function loadChallenge(index) {
         clearInterval(memoryTimer);
         memoryTimer = null;
     }
-    
+    stopTrackAudio();
+
     const challenge = challenges[index];
     const content = document.getElementById("challengeContent");
     const progressFill = document.getElementById("progressFill");
@@ -306,6 +313,8 @@ function loadChallenge(index) {
         renderStoryChallenge(challenge, content);
     } else if (challenge.type === "reveal") {
         renderRevealChallenge(challenge, content);
+    } else if (challenge.type === "hanoi") {
+        renderHanoiChallenge(challenge, content);
     } else if (challenge.type === "soundtrack") {
         renderSoundtrackChallenge(challenge, content);
     }
@@ -499,6 +508,154 @@ function renderRevealChallenge(challenge, content) {
             });
         }
     });
+}
+
+// Desafío Torres de Hanói
+function renderHanoiChallenge(challenge, content) {
+    const discCount = challenge.discCount || 4;
+    const hintHTML = challenge.hint
+        ? `<div class="challenge-hint">${challenge.hint}</div>`
+        : "";
+
+    let towers = { A: [], B: [], C: [] };
+    for (let i = discCount; i >= 1; i--) towers.A.push(i);
+    let moves = 0;
+    let selected = null;
+
+    const discColors = ["", "#e74c3c", "#e67e22", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#1abc9c"];
+
+    content.innerHTML = `
+        <div class="challenge-question">${challenge.question}</div>
+        ${hintHTML}
+        <div class="hanoi-info">
+            <span class="hanoi-moves" id="hanoiMoves">Movimientos: 0</span>
+            <span class="hanoi-min">Mínimo: ${Math.pow(2, discCount) - 1}</span>
+        </div>
+        <div class="hanoi-board" id="hanoiBoard">
+            ${["A", "B", "C"].map(t => `
+                <div class="hanoi-tower" data-tower="${t}">
+                    <div class="hanoi-discs" id="tower${t}"></div>
+                    <div class="hanoi-peg"></div>
+                    <div class="hanoi-base"></div>
+                    <div class="hanoi-label">${t}</div>
+                </div>
+            `).join("")}
+        </div>
+        <div class="hanoi-feedback" id="hanoiFeedback"></div>
+        <div class="hanoi-actions">
+            <button class="hanoi-reset-btn" id="hanoiReset">REINICIAR</button>
+        </div>
+    `;
+
+    const board = document.getElementById("hanoiBoard");
+    const feedback = document.getElementById("hanoiFeedback");
+
+    function renderTowers() {
+        ["A", "B", "C"].forEach(t => {
+            const container = document.getElementById("tower" + t);
+            container.innerHTML = "";
+            towers[t].forEach((size, idx) => {
+                const disc = document.createElement("div");
+                disc.className = "hanoi-disc";
+                disc.dataset.size = size;
+                disc.dataset.tower = t;
+                disc.style.setProperty("--disc-color", discColors[size] || "#d6b878");
+                disc.style.width = (30 + size * (60 / discCount)) + "%";
+                if (selected && selected.tower === t && idx === towers[t].length - 1) {
+                    disc.classList.add("selected");
+                }
+                container.appendChild(disc);
+            });
+        });
+    }
+
+    function selectTower(t) {
+        if (towers[t].length === 0 && !selected) return;
+
+        if (!selected) {
+            if (towers[t].length > 0) {
+                selected = { tower: t, size: towers[t][towers[t].length - 1] };
+                feedback.innerHTML = `<span class="hanoi-msg">Disco ${selected.size} seleccionado de la torre ${t}. Elige destino.</span>`;
+                renderTowers();
+            }
+        } else {
+            if (selected.tower === t) {
+                selected = null;
+                feedback.innerHTML = "";
+                renderTowers();
+                return;
+            }
+            attemptMove(selected.tower, t, selected.size);
+            selected = null;
+        }
+    }
+
+    function attemptMove(from, to, size) {
+        const dest = towers[to];
+        const destTop = dest.length > 0 ? dest[dest.length - 1] : Infinity;
+
+        if (size < destTop) {
+            towers[from].pop();
+            dest.push(size);
+            moves++;
+            document.getElementById("hanoiMoves").textContent = "Movimientos: " + moves;
+            feedback.innerHTML = "";
+            renderTowers();
+
+            if (towers.C.length === discCount) {
+                const minMoves = Math.pow(2, discCount) - 1;
+                const msg = moves === minMoves
+                    ? `¡Perfecto! ${moves} movimientos (mínimo posible) 🎉`
+                    : `¡Lo has conseguido en ${moves} movimientos! 🎉`;
+                feedback.innerHTML = `<span class="feedback-success">${msg}</span>`;
+                setTimeout(() => nextChallenge(), 3000);
+            }
+        } else {
+            feedback.innerHTML = `<span class="hanoi-msg invalid">¡No puedes poner un disco grande sobre uno pequeño!</span>`;
+            const towerEl = board.querySelector(`[data-tower="${to}"]`);
+            towerEl.classList.add("shake");
+            setTimeout(() => towerEl.classList.remove("shake"), 500);
+            renderTowers();
+        }
+    }
+
+    board.addEventListener("click", (e) => {
+        const tower = e.target.closest(".hanoi-tower");
+        if (tower) selectTower(tower.dataset.tower);
+    });
+
+    let dragTower = null;
+    board.addEventListener("mousedown", (e) => {
+        const disc = e.target.closest(".hanoi-disc");
+        if (disc && towers[disc.dataset.tower].length > 0 &&
+            towers[disc.dataset.tower][towers[disc.dataset.tower].length - 1] === parseInt(disc.dataset.size)) {
+            dragTower = disc.dataset.tower;
+        }
+    });
+    board.addEventListener("mouseup", (e) => {
+        if (dragTower) {
+            const tower = e.target.closest(".hanoi-tower");
+            if (tower && tower.dataset.tower !== dragTower) {
+                const size = towers[dragTower][towers[dragTower].length - 1];
+                selected = { tower: dragTower, size: size };
+                attemptMove(dragTower, tower.dataset.tower, size);
+                selected = null;
+            }
+            dragTower = null;
+        }
+    });
+
+    document.getElementById("hanoiReset").addEventListener("click", () => {
+        towers = { A: [], B: [], C: [] };
+        for (let i = discCount; i >= 1; i--) towers.A.push(i);
+        moves = 0;
+        selected = null;
+        document.getElementById("hanoiMoves").textContent = "Movimientos: 0";
+        feedback.innerHTML = "";
+        renderTowers();
+    });
+
+    renderTowers();
 }
 
 // Desafío de foto con dos inputs
@@ -900,6 +1057,9 @@ function playTrackAudio(previewUrl) {
     if (previewUrl) {
         soundtrackAudio = new Audio(previewUrl);
         soundtrackAudio.volume = 1;
+        soundtrackAudio.addEventListener("ended", () => {
+            updatePlayStopBtn(false);
+        });
         soundtrackAudio.play().catch(e => console.error("Play error:", e));
         updatePlayStopBtn(true);
     }
@@ -979,15 +1139,6 @@ function renderSoundtrackChallenge(challenge, content) {
                     } else {
                         playTrackAudio(previewUrl);
                     }
-                });
-
-                soundtrackAudio = new Audio(previewUrl);
-                soundtrackAudio.volume = 1;
-                soundtrackAudio.play().catch(e => console.error("Play error:", e));
-                updatePlayStopBtn(true);
-
-                soundtrackAudio.addEventListener("ended", () => {
-                    updatePlayStopBtn(false);
                 });
             } else if (container) {
                 console.error("No track or preview found. Track:", track);

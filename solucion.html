@@ -168,28 +168,6 @@
             color: var(--gold-light);
         }
 
-        .digit-display {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .digit-box {
-            width: 60px;
-            height: 80px;
-            background: rgba(214, 184, 120, 0.1);
-            border: 2px solid var(--gold);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: "Cormorant Garamond", serif;
-            font-size: 36px;
-            color: var(--gold);
-            font-weight: bold;
-        }
-
         .reaction-correct {
             color: #2ecc71;
         }
@@ -197,6 +175,20 @@
         .reaction-wrong {
             color: #e74c3c;
             text-decoration: line-through;
+        }
+
+        .hanoi-list {
+            margin: 0;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hanoi-list li {
+            font-size: 14px;
+            color: var(--gold-light);
+            line-height: 1.5;
         }
 
         .movies-grid {
@@ -330,7 +322,7 @@
             <div class="solution-answer">
                 Las parejas son las fotos: <code>01.png</code> <code>02.png</code> <code>03.png</code> <code>04.png</code> <code>05.png</code> <code>06.png</code> <code>07.png</code> <code>08.png</code><br>
                 <br>
-                Tiempo límite: <span class="correct">35 segundos</span>
+                Tiempo límite: <span class="correct">25 segundos</span>
             </div>
         </div>
 
@@ -342,7 +334,7 @@
                 <span class="correct">Dubidubidu - Christell</span>
             </div>
             <div class="valid-answers">
-                Opciones: <code>Mi carro - Manolo Escobar</code> <code>La Macarena - Los del Río</code> <code>Así es la vida - Julio Iglesias</code> <code style="background: rgba(46,204,113,0.2);">Dubidubidu - Christell ✓</code>
+                Opciones: <code>Soy una taza - Cantajuegos</code> <code>La Macarena - Los del Río</code> <code>Chuchuwa - Cachureos</code> <code style="background: rgba(46,204,113,0.2);">Dubidubidu - Christell ✓</code>
             </div>
         </div>
 
@@ -362,6 +354,31 @@
         <!-- Desafío 7 -->
         <div class="solution-card">
             <div class="solution-number">Desafío 7</div>
+            <div class="solution-question">¿De qué película es esta BSO? (12 melodías)</div>
+            <div class="solution-answer">
+                <ol class="hanoi-list">
+                    <li>Harry Potter</li>
+                    <li>Halloween</li>
+                    <li>El Padrino</li>
+                    <li>Inception</li>
+                    <li>El Exorcista</li>
+                    <li>Interstellar</li>
+                    <li>Amélie</li>
+                    <li>El Ring</li>
+                    <li>Carros de Fuego</li>
+                    <li>Psicosis</li>
+                    <li>La Lista de Schindler</li>
+                    <li>La Vida es Bella</li>
+                </ol>
+            </div>
+            <div class="valid-answers">
+                Hay que acertar las 12. Cada fallo repite la misma melodía.
+            </div>
+        </div>
+
+        <!-- Desafío 8 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 8</div>
             <span class="target-badge target-paco">Pregunta para Paco</span>
             <div class="solution-question">¿Cuáles son los 8 apellidos de Tania en orden?</div>
             <div class="solution-answer">
@@ -372,9 +389,9 @@
             </div>
         </div>
 
-        <!-- Desafío 8 -->
+        <!-- Desafío 9 -->
         <div class="solution-card">
-            <div class="solution-number">Desafío 8</div>
+            <div class="solution-number">Desafío 9</div>
             <div class="solution-question">Haz clic SOLO en las películas de los años 90</div>
             <div class="solution-answer">
                 <div class="movies-grid">
@@ -404,9 +421,9 @@
             </div>
         </div>
 
-        <!-- Desafío 9 -->
+        <!-- Desafío 10 -->
         <div class="solution-card">
-            <div class="solution-number">Desafío 9</div>
+            <div class="solution-number">Desafío 10</div>
             <span class="target-badge target-paco">Pregunta para Paco</span>
             <div class="solution-question">Cuando Fran empezó a salir con Davinia, Tania tenía 2 años y medio. ¿Qué pasó cuando Fran trajo a Davinia a casa a presentársela?</div>
             <div class="solution-answer">
@@ -417,9 +434,37 @@
             </div>
         </div>
 
-        <!-- Desafío 10 -->
+        <!-- Desafío 11 -->
         <div class="solution-card">
-            <div class="solution-number">Desafío 10</div>
+            <div class="solution-number">Desafío 11</div>
+            <div class="solution-question">Torres de Hanói: 4 discos de la torre A a la torre C (15 movimientos mínimo)</div>
+            <div class="solution-answer">
+                <ol class="hanoi-list">
+                    <li>Disco 1: A → B</li>
+                    <li>Disco 2: A → C</li>
+                    <li>Disco 1: B → C</li>
+                    <li>Disco 3: A → B</li>
+                    <li>Disco 1: C → A</li>
+                    <li>Disco 2: C → B</li>
+                    <li>Disco 1: A → B</li>
+                    <li>Disco 4: A → C</li>
+                    <li>Disco 1: B → C</li>
+                    <li>Disco 2: B → A</li>
+                    <li>Disco 1: C → A</li>
+                    <li>Disco 3: B → C</li>
+                    <li>Disco 1: A → B</li>
+                    <li>Disco 2: A → C</li>
+                    <li>Disco 1: B → C</li>
+                </ol>
+            </div>
+            <div class="valid-answers">
+                Movimientos infinitos permitidos. Solución óptima: 15 pasos.
+            </div>
+        </div>
+
+        <!-- Desafío 12 -->
+        <div class="solution-card">
+            <div class="solution-number">Desafío 12</div>
             <div class="solution-question">Cada mañana, Fran se hace esta pregunta al despertarse... Si un ciempiés tiene cien patas, ¿cuántos ojos tiene un piojo?</div>
             <div class="solution-answer">
                 <span class="correct">π (3.14159...)</span>
@@ -429,40 +474,24 @@
             </div>
         </div>
 
-        <!-- Desafío 11 -->
+        <!-- Desafío 13 -->
         <div class="solution-card">
-            <div class="solution-number">Desafío 11</div>
+            <div class="solution-number">Desafío 13</div>
             <div class="solution-question">¿Qué debe hacer Paco? (Historia de la media maratón)</div>
             <div class="solution-answer">
                 <span class="correct">D) Todas las anteriores.</span>
             </div>
         </div>
 
-        <!-- Desafío 12 -->
+        <!-- Desafío 14 -->
         <div class="solution-card">
-            <div class="solution-number">Desafío 12</div>
+            <div class="solution-number">Desafío 14</div>
             <div class="solution-question">¿Quién es el mejor imitador de Mickey Mouse?</div>
             <div class="solution-answer">
                 <span class="correct">Paco</span>
             </div>
             <div class="valid-answers">
                 Imágenes: <code>pacomickey.png</code> + <code>fotoasombro.png</code>
-            </div>
-        </div>
-
-        <!-- DÍGITOS FINALES -->
-        <div class="solution-card" style="border-color: var(--gold);">
-            <div class="solution-number">Código Final</div>
-            <div class="solution-question">Los 3 dígitos de la caja fuerte</div>
-            <div class="digit-display">
-                <div class="digit-box">0</div>
-                <div class="digit-box">5</div>
-                <div class="digit-box">1</div>
-            </div>
-            <div class="solution-answer" style="text-align: center;">
-                Código: <span class="correct" style="font-size: 24px; font-weight: bold;">0 - 5 - 1</span><br>
-                <br>
-                (5€ que os regalamos para la boda... no os emocionéis mucho!!)
             </div>
         </div>
     </div>
