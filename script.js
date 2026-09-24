@@ -763,7 +763,7 @@ function renderMemoryChallenge(challenge, content) {
                             card1.classList.remove("flipped");
                             card2.classList.remove("flipped");
                             flippedCards = [];
-                        }, 1000);
+                        }, 600);
                     }
                 }
             });
