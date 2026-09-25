@@ -918,6 +918,9 @@ function renderDragChallenge(challenge, content) {
 
     document.getElementById("checkOrder").addEventListener("click", () => {
         const items = [...container.querySelectorAll(".drag-item")];
+        const sortedItems = [...items].sort((a, b) => 
+            parseInt(a.dataset.year) - parseInt(b.dataset.year)
+        );
         const years = items.map(item => parseInt(item.dataset.year));
         const isCorrect = years.every((year, index) => index === 0 || year >= years[index - 1]);
         
@@ -925,11 +928,13 @@ function renderDragChallenge(challenge, content) {
             items.forEach(item => item.style.borderColor = "var(--gold)");
             setTimeout(() => nextChallenge(), 500);
         } else {
-            items.forEach(item => item.style.borderColor = "#dc3545");
+            items.forEach((item, index) => {
+                const isItemCorrect = sortedItems[index] === item;
+                item.style.borderColor = isItemCorrect ? "#28a745" : "#dc3545";
+            });
             setTimeout(() => {
                 items.forEach(item => item.style.borderColor = "");
             }, 1500);
-            alert("Orden incorrecto. Intenta de nuevo...");
         }
     });
 }
